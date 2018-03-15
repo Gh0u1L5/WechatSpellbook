@@ -1,6 +1,5 @@
 package com.gh0u1l5.wechatmagician.spellbook.base
 
-import com.gh0u1l5.wechatmagician.BuildConfig
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
 import de.robv.android.xposed.XposedBridge.log
@@ -32,9 +31,6 @@ abstract class EventCenter {
         if (event == "") {
             throw IllegalArgumentException("event cannot be empty!")
         }
-        if (BuildConfig.DEBUG && registries[event] == null) {
-            log("notify($event) hits nothing!")
-        }
         registries[event]?.forEach {
             tryVerbosely { action(it) }
         }
@@ -44,9 +40,6 @@ abstract class EventCenter {
         if (event == "") {
             throw IllegalArgumentException("event cannot be empty!")
         }
-        if (BuildConfig.DEBUG && registries[event] == null) {
-            log("notifyParallel($event) hits nothing!")
-        }
         registries[event]?.map { observer ->
             tryAsynchronously { action(observer) }
         }?.forEach(Thread::join)
@@ -55,9 +48,6 @@ abstract class EventCenter {
     fun <T: Any>notifyForResult(event: String, action: (Any) -> T?): List<T> {
         if (event == "") {
             throw IllegalArgumentException("event cannot be empty!")
-        }
-        if (BuildConfig.DEBUG && registries[event] == null) {
-            log("notifyForResult($event) hits nothing!")
         }
         return registries[event]?.mapNotNull {
             tryVerbosely { action(it) }

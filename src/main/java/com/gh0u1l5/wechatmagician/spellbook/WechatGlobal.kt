@@ -2,7 +2,6 @@ package com.gh0u1l5.wechatmagician.spellbook
 
 import android.widget.Adapter
 import android.widget.BaseAdapter
-import com.gh0u1l5.wechatmagician.BuildConfig
 import com.gh0u1l5.wechatmagician.spellbook.SpellBook.getApplicationVersion
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.base.WaitChannel
@@ -93,9 +92,7 @@ object WechatGlobal {
                     ReflectionUtil.getClassName(clazz)
                 }
             } catch (t: Throwable) {
-                if (BuildConfig.DEBUG) {
-                    log(t)
-                }
+                // Ignore this one
             } finally {
                 initializeChannel.done()
                 apkFile?.close()
