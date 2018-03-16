@@ -72,5 +72,3 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = 'javadoc'
     outputDirectory = "$buildDir/dokkaJavadoc"
 }
-
-apply from: 'maven.gradle'

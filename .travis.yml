@@ -17,8 +17,6 @@ android:
     - android-${ANDROID_API_LEVEL}
 
 before_install:
-    # Modify the build.gradle for Travis CI builds. 
-    - sed -i '/apply from/d' build.gradle
     # Setup the correct gradle version.
     - wget http://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
     - unzip gradle-${GRADLE_VERSION}-bin.zip
