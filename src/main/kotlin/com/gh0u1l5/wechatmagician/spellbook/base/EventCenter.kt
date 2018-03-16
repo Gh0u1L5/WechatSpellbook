@@ -2,7 +2,6 @@ package com.gh0u1l5.wechatmagician.spellbook.base
 
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
-import de.robv.android.xposed.XposedBridge.log
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class EventCenter {

@@ -2,6 +2,7 @@
 buildscript {
     ext {
         android_gradle_version = '3.2.0-alpha06'
+        dokka_version = '0.9.16'
         kotlin_version = '1.2.30'
     }
     repositories {
@@ -10,17 +11,17 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$android_gradle_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply from: 'maven.gradle'
+apply plugin: 'org.jetbrains.dokka'
 
 android {
     compileSdkVersion 27
-
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 27
@@ -29,7 +30,6 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             postprocessing {
@@ -43,6 +43,9 @@ android {
     }
     lintOptions {
         abortOnError false
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
     }
 }
 
@@ -64,3 +67,10 @@ dependencies {
     implementation 'net.dongliu:apk-parser:2.4.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
+
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = 'javadoc'
+    outputDirectory = "$buildDir/dokkaJavadoc"
+}
+
+apply from: 'maven.gradle'

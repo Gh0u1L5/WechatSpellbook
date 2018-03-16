@@ -76,13 +76,9 @@ afterEvaluate { project ->
         sign configurations.archives
     }
 
-    task javadoc(type: Javadoc) {
-        source = android.sourceSets.main.java.sourceFiles
-    }
-
-    task javadocJar(type: Jar, dependsOn: javadoc) {
+    task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
         classifier = 'javadoc'
-        from javadoc.destinationDir
+        from "$buildDir/dokkaJavadoc"
     }
 
     task sourcesJar(type: Jar) {
