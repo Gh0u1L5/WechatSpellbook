@@ -1,5 +1,54 @@
-# WechatSpellbook
+# Wechat Spellbook
 
 [![Build Status](https://travis-ci.org/Gh0u1L5/WechatSpellbook.svg?branch=master)](https://travis-ci.org/Gh0u1L5/WechatSpellbook) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.gh0u1l5/wechat-spellbook/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.gh0u1l5/wechat-spellbook)
 
-Wechat Spellbook is a powerful and scalable framework, which allows everyone to develop a Wechat Xposed module in minutes.
+__Wiki文档正在编写中，请稍安勿躁……如果真的很好奇，你也可以偷偷看代码呀。__
+
+---
+
+Wechat Spellbook 是一个使用Kotlin编写的开源微信插件框架，底层需要 [Xposed](https://forum.xda-developers.com/xposed) 或 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 等Hooking框架的支持，而顶层可以轻松对接Java、Kotlin、Scala等JVM系语言。让程序员能够在几分钟内编写出简单的微信插件，随意揉捏微信的内部逻辑。
+
+另外，在编写项目文档的过程中，也会找机会向大家分享一些逆向微信的经验和适配不同操作系统踩到的坑，也欢迎大家把自己的经验分享上来自由讨论。
+
+## 便利特色
+
+* 使用一套API __自动分析__ 微信内部结构特征，__避免手工适配__ 每个微信版本不同的类名、方法名。
+* 框架内部设计了 _Plugin_ 和 _Hooker_ 两种不同的事件体系。
+  - _Plugin_ 对接Spellbook接口，使开发者能够直接使用设计好的事件消息，保证 __便利性__ 。
+  - _Hooker_ 对接Xposed接口，使开发者能够按照传统的Xposed风格自由发挥，保证 __自由度__ 。
+* 正确使用 _Plugin_ 体系，有助于回避Xposed的一些小问题，如
+  - 函数调用被前一个劫持者打断导致的插件相互冲突。
+  - Xposed自Android 7.0后偶发的，由于多线程导致ART崩溃的问题。
+
+## 实现功能
+
+目前Wechat Spellbook初步实现了对微信以下常见操作的监听与劫持。
+* Activity生命周期
+* 数据库操作
+* 文件系统操作
+* ListView显示
+* 弹出菜单构造
+* 通知栏消息通知
+* 搜索栏操作
+* 消息存储器操作
+* Uri路由
+* XML解析
+
+由于自己平时时间紧张，目前的事件接口设计还比较潦草，仅仅满足了自家 [Wechat Magician](https://github.com/Gh0u1L5/WechatMagician) 的功能需要而已，欢迎各位进一步完善和改进事件接口的设计。
+
+接下来准备支持的项目有： [MDWechat](https://github.com/Blankeer/MDWechat)
+
+## 关于VirtualXposed
+
+目前对于VirtualXposed的支持还算不上完善，因为VirtualXposed的环境和原生Xposed的环境实在是差了太多，我和weishu折腾了很久才算是在部分设备上解决了黑屏卡死的问题。现在我们俩发布代码的日子里，一个拜三清一个拜关公，希望能够帮Bug们早日往生。
+
+## 写给开发者
+
+在出于兴趣接触微信逆向的短短一年里，我接触到了形形色色的开发者、投资者、支持者。被微信本身复杂成熟的架构深深吸引的同时，也惊异于微信衍生出来的灰色产业之庞大、第三方微信竞争之激烈。
+有不少朋友劝我闭源、商业化，而且拿出了很多细致的想法，我很感激他们的帮助，但是最后还是决定在开源的方向上再次迈出了一大步，原因有二。
+
+其一，我不想停在这里。商业化必然牵扯大量的时间精力和权益纠葛。我不想在自己正处在上升期的时候，就草率地把大量的时间精力都花在一个刚满20岁的时候意外做出来的小成就上，然后吃上十几年的老本。而且这个项目，归根结底是一个寄生在微信上的项目。这种格局，跟我每天在实习岗位上接触到的、跟大学里的同学谈论到的，都根本不在一个层面上。我虽然知道自己的才华有限，但是只要有机会的话，我还是想看看更高处的风景。
+
+其二，我太过理想主义。中国互联网在很早的时候就已经是一个相当商业化的世界了。我并不反对商业化，也不觉得商业化有任何的道德问题。人，总归是要吃饭的。像fkzhang这样能靠自己的才华吃饭，既不偷也不抢，这有什么错呢？但是我心里总归是感觉到失落的，因为我最早爱上的，是一个自由的互联网，是一个为每个有才华有求知欲的年轻人准备的儿童乐园。只要思想用0和1表达出来，就再也没有什么规则能够阻挡他们，他们就是儿童乐园之王。我希望当我国的年轻一代对计算机产生好奇时，也能像西方国家的孩子们一样，能够轻松地、无语言障碍地，接触到大量好玩有趣的个人开源项目，进而爱上这个0与1的世界。如果有年轻的初中、高中的学弟学妹，能够用我的项目把微信像橡皮泥一样随意揉捏，像当年的我一样深深地享受到这个世界的乐趣，那么对我实在是一种莫大的鼓励与快乐。
+
+当然，对于诸位想要基于我的项目做商业项目的开发者，也请尽管拿去。我不喜欢道德绑架别人，也不认为这有什么绑架的必要。但是如果你在闲暇时间能够贡献十几行代码、修复些你发现的Bug，那就已经十分感激。
