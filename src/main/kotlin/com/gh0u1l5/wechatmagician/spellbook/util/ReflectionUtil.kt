@@ -50,7 +50,13 @@ object ReflectionUtil {
             })
         }
 
-        fun firstOrNull(): Class<*>? = classes.firstOrNull()
+        fun firstOrNull(): Class<*>? {
+            if (classes.size > 1) {
+                val names = classes.map { it.canonicalName }
+                log("Warning: found a signature that matches more than one class: $names")
+            }
+            return classes.firstOrNull()
+        }
     }
 
     // classesCache stores the result of findClassesFromPackage to speed up next search.
