@@ -22,8 +22,6 @@ object SearchBar : EventCenter() {
         // Hide Input Method
         val imm = search.context.getSystemService(INPUT_METHOD_SERVICE)
         (imm as InputMethodManager).hideSoftInputFromWindow(search.windowToken, 0)
-        // Clean SearchBar content
-        editable?.clear()
     }
 
     @WechatHookMethod @JvmStatic fun hookEvents() {
