@@ -9,6 +9,7 @@ object C {
     val FileInputStream = java.io.FileInputStream::class.java
     val FileOutputStream = java.io.FileOutputStream::class.java
     val Int = Int::class.java
+    val Iterator = java.util.Iterator::class.java
     val Long = Long::class.java
     val Map = Map::class.java
     val Object = Object::class.java
@@ -33,7 +34,10 @@ object C {
     val ListAdapter = android.widget.ListAdapter::class.java
     val ListView = android.widget.ListView::class.java
     val Menu = android.view.Menu::class.java
+    val Message = android.os.Message::class.java
     val MotionEvent = android.view.MotionEvent::class.java
+    val Notification = android.app.Notification::class.java
+    val NotificationManager = android.app.NotificationManager::class.java
     val View = android.view.View::class.java
     val ViewGroup = android.view.ViewGroup::class.java
 

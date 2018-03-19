@@ -1,13 +1,14 @@
 package com.gh0u1l5.wechatmagician.spellbook.hookers
 
+import android.os.Message
+import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
 import com.gh0u1l5.wechatmagician.spellbook.annotations.WechatHookMethod
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.INotificationHook
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.booter.notification.queue.Classes.NotificationAppMsgQueue
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.booter.notification.queue.Methods.NotificationAppMsgQueue_add
-import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findAndHookMethod
+import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.booter.notification.Classes.MMNotification_MessageHandler
 import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 
 object Notifications : EventCenter() {
 
@@ -15,15 +16,30 @@ object Notifications : EventCenter() {
         get() = listOf(INotificationHook::class.java)
 
     @WechatHookMethod @JvmStatic fun hookEvents() {
-        findAndHookMethod(NotificationAppMsgQueue, NotificationAppMsgQueue_add, object : XC_MethodHook() {
+        findAndHookMethod(MMNotification_MessageHandler, "handleMessage", C.Message, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
-                notify("onMessageNotificationAdding") { plugin ->
-                    (plugin as INotificationHook).onMessageNotificationAdding(param)
+                val raw = param.args[0] as? Message ?: return
+                val talker   = raw.data.getString("notification.show.talker")
+                val content  = raw.data.getString("notification.show.message.content")
+                val type     = raw.data.getInt("notification.show.message.type")
+                val tipsFlag = raw.data.getInt("notification.show.tipsflag")
+                notify("onMessageHandling") { plugin ->
+                    val interrupt = (plugin as INotificationHook).onMessageHandling(
+                            INotificationHook.Message(talker, content, type, tipsFlag))
+                    if (interrupt) {
+                        param.result = null
+                    }
                 }
             }
             override fun afterHookedMethod(param: MethodHookParam) {
-                notify("onMessageNotificationAdded") { plugin ->
-                    (plugin as INotificationHook).onMessageNotificationAdded(param)
+                val raw = param.args[0] as? Message ?: return
+                val talker   = raw.data.getString("notification.show.talker")
+                val content  = raw.data.getString("notification.show.message.content")
+                val type     = raw.data.getInt("notification.show.message.type")
+                val tipsFlag = raw.data.getInt("notification.show.tipsflag")
+                notify("onMessageHandled") { plugin ->
+                    (plugin as INotificationHook).onMessageHandled(
+                            INotificationHook.Message(talker, content, type, tipsFlag))
                 }
             }
         })

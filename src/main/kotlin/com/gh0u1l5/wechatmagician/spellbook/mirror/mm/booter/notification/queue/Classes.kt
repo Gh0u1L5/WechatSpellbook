@@ -1,5 +1,6 @@
 package com.gh0u1l5.wechatmagician.spellbook.mirror.mm.booter.notification.queue
 
+import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxClasses
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLoader
@@ -11,7 +12,7 @@ object Classes {
     val NotificationAppMsgQueue: Class<*> by wxLazy("NotificationAppMsgQueue") {
         findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.booter.notification.queue")
                 .filterByMethod(null, NotificationItem)
-                .filterByMethod(null, "save")
+                .filterByMethod(C.Iterator, "iterator")
                 .firstOrNull()
     }
 }
