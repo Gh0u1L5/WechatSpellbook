@@ -57,10 +57,14 @@ object SpellBook {
      */
     fun isImportantWechatProcess(lpparam: XC_LoadPackage.LoadPackageParam): Boolean {
         val processName = lpparam.processName
-        if (processName.contains(':')) {
-            if (!processName.endsWith(":tools")) {
-                return false
+        when {
+            !processName.contains(':') -> {
+                // Found main process, continue
             }
+            processName.endsWith(":tools") -> {
+                // Found :tools process, continue
+            }
+            else -> return false
         }
         val features = listOf (
                 "libwechatcommon.so",
