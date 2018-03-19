@@ -11,6 +11,7 @@ object Classes {
     val NotificationAppMsgQueue: Class<*> by wxLazy("NotificationAppMsgQueue") {
         findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.booter.notification.queue")
                 .filterByMethod(null, NotificationItem)
+                .filterByMethod(null, "save")
                 .firstOrNull()
     }
 }
