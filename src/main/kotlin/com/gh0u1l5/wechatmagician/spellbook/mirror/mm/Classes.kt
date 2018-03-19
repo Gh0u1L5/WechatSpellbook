@@ -9,7 +9,7 @@ import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.sdk.platformtools.Classes.
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
-    private val classesInDepthOne by wxLazy("MM packages on depth one") {
+    private val classesInDepthOne by wxLazy("$wxPackageName.*") {
         findClassesFromPackage(wxLoader!!, wxClasses!!, wxPackageName, 1)
     }
 
