@@ -15,9 +15,8 @@ import java.io.File
 
 /**
  * This is the main class of Wechat Magician SpellBook. It implements most of the functions that
- * should be called when you load the package in Xposed. For more details, please check the tutorial
- * documents for developers.
- * TODO: create a "Get Start" document for Wechat Magician SpellBook
+ * should be called when you load the package in Xposed. For more details, please check the [tutorial
+ * documents](https://github.com/Gh0u1L5/WechatSpellbook/wiki) for developers.
  */
 object SpellBook {
 
