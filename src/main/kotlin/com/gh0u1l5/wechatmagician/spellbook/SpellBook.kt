@@ -138,8 +138,8 @@ object SpellBook {
      * @param hookers The list of custom hookers written by the developer. It should contain one or
      * more methods that has [WechatHookMethod] annotation.
      */
-    fun startup(lpparam: XC_LoadPackage.LoadPackageParam, plugins: List<Any>, hookers: List<Any>) {
-        log("Wechat SpellBook: ${plugins.size} plugins, ${hookers.size} hookers.")
+    fun startup(lpparam: XC_LoadPackage.LoadPackageParam, plugins: List<Any>?, hookers: List<Any>?) {
+        log("Wechat SpellBook: ${plugins?.size ?: 0} plugins, ${hookers?.size ?: 0} hookers.")
         WechatGlobal.init(lpparam)
         registerPlugins(plugins)
         registerOfficialHookers()
@@ -149,7 +149,10 @@ object SpellBook {
     /**
      * Registers the given list of plugins asynchronously to all the event centers.
      */
-    private fun registerPlugins(plugins: List<Any>) {
+    private fun registerPlugins(plugins: List<Any>?) {
+        if (plugins == null) {
+            return
+        }
         centers.forEach { center ->
             tryAsynchronously {
                 center.interfaces.forEach { `interface` ->
@@ -185,7 +188,10 @@ object SpellBook {
     /**
      * Registers all the custom hookers to the Xposed framework using [tryHook].
      */
-    private fun registerCustomHookers(customHookers: List<Any>) {
+    private fun registerCustomHookers(customHookers: List<Any>?) {
+        if (customHookers == null) {
+            return
+        }
         customHookers.forEach { hooker ->
             hooker::class.java.declaredMethods.forEach { method ->
                 val isHookMethod = method.isAnnotationPresent(WechatHookMethod::class.java)
