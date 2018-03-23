@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Gh0u1L5/WechatSpellbook.svg?branch=master)](https://travis-ci.org/Gh0u1L5/WechatSpellbook) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.gh0u1l5/wechat-spellbook/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.gh0u1l5/wechat-spellbook)
 
-__Wiki文档正在编写中，请稍安勿躁……如果真的很好奇，你也可以偷偷看代码呀。__
+__开发文档写了个开头了，请稍安勿躁……如果真的很好奇，你也可以偷偷看代码呀。__
 
 ---
 
@@ -20,23 +20,20 @@ Wechat Spellbook 是一个使用Kotlin编写的开源微信插件框架，底层
   - 函数调用被前一个劫持者打断导致的插件相互冲突。
   - Xposed自Android 7.0后偶发的，由于多线程导致ART崩溃的问题。
 
-## 实现功能
-
-目前Wechat Spellbook初步实现了对微信以下常见操作的监听与劫持。
-* Activity生命周期
-* 数据库操作
-* 文件系统操作
-* ListView显示
-* 弹出菜单构造
-* 通知栏消息通知
-* 搜索栏操作
-* 消息存储器操作
-* Uri路由
-* XML解析
-
-由于自己平时时间紧张，目前的事件接口设计还比较潦草，仅仅满足了自家 [Wechat Magician](https://github.com/Gh0u1L5/WechatMagician) 的功能需要而已，欢迎各位进一步完善和改进事件接口的设计。
-
-接下来准备支持的项目有： [MDWechat](https://github.com/Blankeer/MDWechat)
+## 开发文档
+* [简介](https://github.com/Gh0u1L5/WechatSpellbook/wiki/Home)
+* [快速上手](https://github.com/Gh0u1L5/WechatSpellbook/wiki/快速上手)
+* 教程
+  - Plugin架构与使用
+  - Hooker架构与使用
+  - Mirror反射集合
+  - 混淆与自动适配
+* 逆向技巧
+  - 常见逆向工具
+  - 调试输出
+  - 堆栈跟踪
+  - Support库
+  - 免重启调试插件
 
 ## 关于VirtualXposed
 
