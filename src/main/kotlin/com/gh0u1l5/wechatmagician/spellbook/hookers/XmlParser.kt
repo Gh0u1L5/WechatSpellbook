@@ -18,15 +18,18 @@ object XmlParser : EventCenter() {
     @WechatHookMethod @JvmStatic fun hookEvents() {
         findAndHookMethod(XmlParser, XmlParser_parse, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
-                notify("onXmlParsing") { plugin ->
-                    (plugin as IXmlParserHook).onXmlParsing(param)
+                val xml  = param.args[0] as String
+                val root = param.args[1] as String
+                notifyWithOperation("onXmlParsing", param) { plugin ->
+                    (plugin as IXmlParserHook).onXmlParsing(xml, root)
                 }
             }
             override fun afterHookedMethod(param: MethodHookParam) {
-                val root = param.args[1] as String
-                val xml  = param.result as MutableMap<String, String>? ?: return
+                val xml    = param.args[0] as String
+                val root   = param.args[1] as String
+                val result = param.result as MutableMap<String, String>? ?: return
                 notify("onXmlParsed") { plugin ->
-                    (plugin as IXmlParserHook).onXmlParsed(root, xml)
+                    (plugin as IXmlParserHook).onXmlParsed(xml, root, result)
                 }
             }
         })

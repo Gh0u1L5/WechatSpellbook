@@ -18,12 +18,6 @@ object SearchBar : EventCenter() {
     override val interfaces: List<Class<*>>
         get() = listOf(ISearchBarConsole::class.java)
 
-    private fun cleanup(search: EditText, editable: Editable?) {
-        // Hide Input Method
-        val imm = search.context.getSystemService(INPUT_METHOD_SERVICE)
-        (imm as InputMethodManager).hideSoftInputFromWindow(search.windowToken, 0)
-    }
-
     @WechatHookMethod @JvmStatic fun hookEvents() {
         hookAllConstructors(ActionBarEditText, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
@@ -38,10 +32,12 @@ object SearchBar : EventCenter() {
                         var command = editable.toString()
                         if (command.startsWith("#") && command.endsWith("#")) {
                             command = command.drop(1).dropLast(1)
-                            notify("onHandleCommand") { plugin ->
+                            notifyParallel("onHandleCommand") { plugin ->
                                 val consumed = (plugin as ISearchBarConsole).onHandleCommand(context, command)
                                 if (consumed) {
-                                    cleanup(search, editable)
+                                    // Hide Input Method
+                                    val imm = search.context.getSystemService(INPUT_METHOD_SERVICE)
+                                    (imm as InputMethodManager).hideSoftInputFromWindow(search.windowToken, 0)
                                 }
                             }
                         }

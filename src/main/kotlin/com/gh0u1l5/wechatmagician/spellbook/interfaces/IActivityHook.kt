@@ -9,30 +9,30 @@ interface IActivityHook {
     /**
      * Called when a Wechat MMActivity has created a options menu.
      *
-     * @param activity The current activity shown in foreground.
-     * @param menu The options menu just created by the activity.
+     * @param activity the activity shown in foreground.
+     * @param menu the options menu just created by the activity.
      */
     fun onMMActivityOptionsMenuCreated(activity: Activity, menu: Menu) { }
 
     /**
-     * Called before an activity is created.
+     * Called when an Activity is going to invoke [Activity.onCreate] method.
      *
-     * @param activity The activity object that is creating.
-     * @param savedInstanceState The saved instance state for restoring the state.
+     * @param activity the activity object that is creating.
+     * @param savedInstanceState the saved instance state for restoring the state.
      */
     fun onActivityCreating(activity: Activity, savedInstanceState: Bundle?) { }
 
     /**
-     * Called before an activity is started.
+     * Called when an activity is going to invoke [Activity.onStart] method.
      *
-     * @param activity The activity object that is starting.
+     * @param activity the activity object that is starting.
      */
     fun onActivityStarting(activity: Activity) { }
 
     /**
-     * Called before an activity is resumed.
+     * Called when an activity is going to invoke [Activity.onResume] method.
      *
-     * @param activity The activity object that is resuming.
+     * @param activity the activity object that is resuming.
      */
     fun onActivityResuming(activity: Activity) { }
 }

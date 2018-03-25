@@ -19,17 +19,15 @@ object FileSystem : EventCenter() {
         findAndHookMethod(C.File, "delete", object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val file = param.thisObject as File
-                notify("onFileDeleting") { plugin ->
-                    val interrupt = (plugin as IFileSystemHook).onFileDeleting(file)
-                    if (interrupt) {
-                        param.result = true
-                    }
+                notifyWithOperation("onFileDeleting", param) { plugin ->
+                    (plugin as IFileSystemHook).onFileDeleting(file)
                 }
             }
             override fun afterHookedMethod(param: MethodHookParam) {
-                val file = param.thisObject as File
-                notify("onFileDeleted") { plugin ->
-                    (plugin as IFileSystemHook).onFileDeleted(file)
+                val file   = param.thisObject as File
+                val result = param.result as Boolean
+                notifyWithOperation("onFileDeleted", param) { plugin ->
+                    (plugin as IFileSystemHook).onFileDeleted(file, result)
                 }
             }
         })
@@ -43,10 +41,10 @@ object FileSystem : EventCenter() {
         })
         findAndHookConstructor(C.FileOutputStream, C.File, C.Boolean, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
-                val file = param.args[0] as File
-                val overwrite = param.args[1] as Boolean
+                val file   = param.args[0] as File
+                val append = param.args[1] as Boolean
                 notify("onFileWriting") { plugin ->
-                    (plugin as IFileSystemHook).onFileWriting(file, overwrite)
+                    (plugin as IFileSystemHook).onFileWriting(file, append)
                 }
             }
         })

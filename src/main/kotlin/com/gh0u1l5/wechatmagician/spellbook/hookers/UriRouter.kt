@@ -23,7 +23,7 @@ object UriRouter : EventCenter() {
                 val uri = intent?.data ?: return
                 val activity = param.thisObject as Activity
                 if (uri.host == "magician") {
-                    notify("onUriRouterReceiving") { plugin ->
+                    notifyParallel("onUriRouterReceiving") { plugin ->
                         (plugin as IUriRouterHook).onUriRouterReceiving(activity, uri)
                     }
                     param.result = false

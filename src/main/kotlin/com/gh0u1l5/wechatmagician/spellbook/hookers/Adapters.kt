@@ -48,13 +48,22 @@ object Adapters : EventCenter() {
         findAndHookMethod(
                 C.HeaderViewListAdapter, "getView",
                 C.Int, C.View, C.ViewGroup, object : XC_MethodHook() {
+            override fun beforeHookedMethod(param: MethodHookParam) {
+                val adapter     = param.thisObject
+                val position    = param.args[0] as Int
+                val convertView = param.args[1] as View?
+                val parent      = param.args[2] as ViewGroup
+                notifyWithOperation("onHeaderViewListAdapterGettingView", param) { plugin ->
+                    (plugin as IAdapterHook).onHeaderViewListAdapterGettingView(adapter, position, convertView, parent)
+                }
+            }
             override fun afterHookedMethod(param: MethodHookParam) {
                 val adapter     = param.thisObject
                 val position    = param.args[0] as Int
                 val convertView = param.args[1] as View?
                 val parent      = param.args[2] as ViewGroup
-                val result      = param.result as View? ?: return
-                notify("onHeaderViewListAdapterGotView") { plugin ->
+                val result      = param.result as View?
+                notifyWithOperation("onHeaderViewListAdapterGotView", param) { plugin ->
                     (plugin as IAdapterHook).onHeaderViewListAdapterGotView(adapter, position, convertView, parent, result)
                 }
             }

@@ -57,8 +57,8 @@ object WechatGlobal {
      * Creates a lazy object for dynamic analyzing. Its evaluation will be blocked by
      * the [initializeChannel] if the initialization is unfinished.
      *
-     * @param name The name of the lazy field. This is used to print a helpful error message.
-     * @param initializer The callback that actually initialize the lazy object.
+     * @param name the name of the lazy field, which is used to print a helpful error message.
+     * @param initializer the callback that actually initialize the lazy object.
      * @return a lazy object that can be used for lazy evaluation.
      */
     fun <T> wxLazy(name: String, initializer: () -> T?): Lazy<T> = lazy {
@@ -71,8 +71,8 @@ object WechatGlobal {
     /**
      * Loads necessary information for static analysis into [WechatGlobal].
      *
-     * @param lpparam The LoadPackageParam object that describes the current process. It should be
-     * the same one passed to [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage].
+     * @param lpparam the LoadPackageParam object that describes the current process, which should
+     * be the same one passed to [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage].
      */
     @JvmStatic fun init(lpparam: XC_LoadPackage.LoadPackageParam) {
         tryAsynchronously {

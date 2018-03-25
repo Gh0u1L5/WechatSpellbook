@@ -30,6 +30,6 @@ object MirrorUtil {
                 val value = field.get(instance)
                 "$className.$key" to value.toString()
             }
-        }.fold(emptyList(), { a, b -> a + b })
+        }.flatten()
     }
 }

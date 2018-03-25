@@ -23,12 +23,9 @@ object Notifications : EventCenter() {
                 val content  = raw.data.getString("notification.show.message.content")
                 val type     = raw.data.getInt("notification.show.message.type")
                 val tipsFlag = raw.data.getInt("notification.show.tipsflag")
-                notify("onMessageHandling") { plugin ->
-                    val interrupt = (plugin as INotificationHook).onMessageHandling(
+                notifyWithInterrupt("onMessageHandling", param) { plugin ->
+                    (plugin as INotificationHook).onMessageHandling(
                             INotificationHook.Message(talker, content, type, tipsFlag))
-                    if (interrupt) {
-                        param.result = null
-                    }
                 }
             }
             override fun afterHookedMethod(param: MethodHookParam) {

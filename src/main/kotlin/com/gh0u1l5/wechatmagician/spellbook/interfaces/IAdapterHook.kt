@@ -4,6 +4,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Adapter
 import android.widget.BaseAdapter
+import com.gh0u1l5.wechatmagician.spellbook.base.Operation
+import com.gh0u1l5.wechatmagician.spellbook.base.Operation.Companion.nop
 
 interface IAdapterHook {
 
@@ -11,7 +13,7 @@ interface IAdapterHook {
      * Called when a Wechat AddressAdapter has been created. This adapter will be used in the
      * ListView for all the contacts (which is shown in the second tab of Wechat).
      *
-     * @param adapter The created AddressAdapter object.
+     * @param adapter the created AddressAdapter object.
      */
     fun onAddressAdapterCreated(adapter: BaseAdapter) { }
 
@@ -19,19 +21,32 @@ interface IAdapterHook {
      * Called when a Wechat ConversationAdapter has been created. This adapter will be used in the
      * ListView for all the conversations (which is shown in the first tab of Wechat).
      *
-     * @param adapter The created ConversationAdapter object.
+     * @param adapter the created ConversationAdapter object.
      */
     fun onConversationAdapterCreated(adapter: BaseAdapter) { }
 
     /**
-     * Called when the [Adapter.getView] function for a Wechat SnsUserUIAdapter has finished. This
-     * adapter is used in the ListView for all the moments posted by user himself / herself.
+     * Called when an HeaderViewListAdapter object is going to invoke [Adapter.getView] method.
      *
-     * @param adapter The SnsUserUIAdapter object which handle the getView().
-     * @param position The position of the item whose view we want.
-     * @param convertView The old view to reuse, if possible.
-     * @param parent The parent that this view will eventually be attached to
-     * @param result The view that is returned by the original getView() function.
+     * @param adapter the HeaderViewListAdapter object calling the getView().
+     * @param position the position of the item whose view we want.
+     * @param convertView the old view to reuse, if possible.
+     * @param parent the parent that this view will eventually be attached to.
+     * @return to bypass the original method, return a View object wrapped by [Operation.replacement]
+     * or [Operation.interruption], otherwise return [Operation.nop].
      */
-    fun onHeaderViewListAdapterGotView(adapter: Any, position: Int, convertView: View?, parent: ViewGroup, result: View) { }
+    fun onHeaderViewListAdapterGettingView(adapter: Any, position: Int, convertView: View?, parent: ViewGroup): Operation<View?> = nop()
+
+    /**
+     * Called when an HeaderViewListAdapter object has returned from [Adapter.getView] method.
+     *
+     * @param adapter the HeaderViewListAdapter object calling the getView().
+     * @param position the position of the item whose view we want.
+     * @param convertView the old view to reuse, if possible.
+     * @param parent the parent that this view will eventually be attached to.
+     * @param result the view that is returned by the original getView() function.
+     * @return to replace the original result, return a View object wrapped by [Operation.replacement],
+     * otherwise return [Operation.nop].
+     */
+    fun onHeaderViewListAdapterGotView(adapter: Any, position: Int, convertView: View?, parent: ViewGroup, result: View?): Operation<View?> = nop()
 }

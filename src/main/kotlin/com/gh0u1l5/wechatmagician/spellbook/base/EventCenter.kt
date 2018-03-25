@@ -2,6 +2,7 @@ package com.gh0u1l5.wechatmagician.spellbook.base
 
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
+import de.robv.android.xposed.XC_MethodHook
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class EventCenter {
@@ -42,6 +43,42 @@ abstract class EventCenter {
         registries[event]?.map { observer ->
             tryAsynchronously { action(observer) }
         }?.forEach(Thread::join)
+    }
+
+    /**
+     * If the hooked method has no return type, then the action may only decide whether interrupt it or not.
+     */
+    fun notifyWithInterrupt(event: String, param: XC_MethodHook.MethodHookParam, action: (Any) -> Boolean) {
+        if (event == "") {
+            throw IllegalArgumentException("event cannot be empty!")
+        }
+        registries[event]?.forEach {
+            tryVerbosely {
+                val shouldInterrupt = action(it)
+                if (shouldInterrupt) {
+                    param.result = null
+                }
+            }
+        }
+    }
+
+    /**
+     * If the hooked method has a return type, then the action may have an general operation.
+     */
+    fun notifyWithOperation(event: String, param: XC_MethodHook.MethodHookParam, action: (Any) -> Operation<*>) {
+        if (event == "") {
+            throw IllegalArgumentException("event cannot be empty!")
+        }
+        var priority = -1
+        registries[event]?.forEach {
+            tryVerbosely {
+                val ret = action(it)
+                if (ret.returnEarly && ret.priority > priority) {
+                    param.result = ret.value
+                    priority = ret.priority
+                }
+            }
+        }
     }
 
     fun <T: Any>notifyForResult(event: String, action: (Any) -> T?): List<T> {

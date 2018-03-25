@@ -67,9 +67,9 @@ object ListViewHider {
                 }
             }
             return@filter false
-        }.fold(initial, { sections, index ->
-                    sections.dropLast(1) + sections.last().split(index)
-                })
+        }.fold(initial) { sections, index ->
+            sections.dropLast(1) + sections.last().split(index)
+        }
     }
 
     @WechatHookMethod @JvmStatic fun hijackMMBaseAdapter() {

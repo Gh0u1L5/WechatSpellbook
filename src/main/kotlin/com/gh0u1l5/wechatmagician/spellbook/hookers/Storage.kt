@@ -20,7 +20,6 @@ object Storage : EventCenter() {
         get() = listOf(IMessageStorageHook::class.java, IImageStorageHook::class.java)
 
     @WechatHookMethod @JvmStatic fun hookMessageStorage() {
-        // Analyze dynamically to find the global message storage instance.
         hookAllConstructors(MsgInfoStorage, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 notify("onMessageStorageCreated") { plugin ->
@@ -29,8 +28,14 @@ object Storage : EventCenter() {
             }
         })
 
-        // Hook MsgInfoStorage to record the received messages.
         findAndHookMethod(MsgInfoStorage, MsgInfoStorage_insert, object : XC_MethodHook() {
+            override fun beforeHookedMethod(param: MethodHookParam) {
+                val msgObject = param.args[0]
+                val msgId = getLongField(msgObject, "field_msgId")
+                notifyWithInterrupt("onMessageStorageInserting", param) { plugin ->
+                    (plugin as IMessageStorageHook).onMessageStorageInserting(msgId, msgObject)
+                }
+            }
             override fun afterHookedMethod(param: MethodHookParam) {
                 val msgObject = param.args[0]
                 val msgId = getLongField(msgObject, "field_msgId")
@@ -44,7 +49,6 @@ object Storage : EventCenter() {
     }
 
     @WechatHookMethod @JvmStatic fun hookImageStorage() {
-        // Analyze dynamically to find the global image storage instance.
         hookAllConstructors(ImgInfoStorage, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 notify("onImageStorageCreated") { plugin ->
@@ -54,6 +58,14 @@ object Storage : EventCenter() {
         })
 
         findAndHookMethod(ImgInfoStorage, ImgInfoStorage_load, object : XC_MethodHook() {
+            override fun beforeHookedMethod(param: MethodHookParam) {
+                val imageId = param.args[0] as String?
+                val prefix = param.args[1] as String?
+                val suffix = param.args[2] as String?
+                notifyWithInterrupt("onImageStorageLoading", param) { plugin ->
+                    (plugin as IImageStorageHook).onImageStorageLoading(imageId, prefix, suffix)
+                }
+            }
             override fun afterHookedMethod(param: MethodHookParam) {
                 val imageId = param.args[0] as String?
                 val prefix = param.args[1] as String?

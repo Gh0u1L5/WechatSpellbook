@@ -1,5 +1,6 @@
 package com.gh0u1l5.wechatmagician.spellbook.hookers
 
+import android.content.ContentValues
 import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
 import com.gh0u1l5.wechatmagician.spellbook.annotations.WechatHookMethod
@@ -15,7 +16,7 @@ import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 object Database : EventCenter() {
 
     override val interfaces: List<Class<*>>
-        get() = listOf(IDatabaseHook::class.java, IDatabaseHook::class.java)
+        get() = listOf(IDatabaseHook::class.java)
 
     @WechatHookMethod @JvmStatic fun hookEvents() {
         findAndHookMethod(
@@ -23,15 +24,21 @@ object Database : EventCenter() {
                 C.String, SQLiteCursorFactory, C.Int, SQLiteErrorHandler, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val path     = param.args[0] as String
-                notify("onDatabaseOpening") { plugin ->
-                    (plugin as IDatabaseHook).onDatabaseOpening(path)
+                val factory  = param.args[1]
+                val flags    = param.args[2] as Int
+                val handler  = param.args[3]
+                notifyWithOperation("onDatabaseOpening", param) { plugin ->
+                    (plugin as IDatabaseHook).onDatabaseOpening(path, factory, flags, handler)
                 }
             }
             override fun afterHookedMethod(param: MethodHookParam) {
                 val path     = param.args[0] as String
-                val database = param.result
-                notify("onDatabaseOpened") { plugin ->
-                    (plugin as IDatabaseHook).onDatabaseOpened(path, database)
+                val factory  = param.args[1]
+                val flags    = param.args[2] as Int
+                val handler  = param.args[3]
+                val result   = param.result
+                notifyWithOperation("onDatabaseOpened", param) { plugin ->
+                    (plugin as IDatabaseHook).onDatabaseOpened(path, factory, flags, handler, result)
                 }
             }
         })
@@ -39,14 +46,31 @@ object Database : EventCenter() {
         findAndHookMethod(
                 SQLiteDatabase, "rawQueryWithFactory",
                 SQLiteCursorFactory, C.String, C.StringArray, C.String, SQLiteCancellationSignal, object : XC_MethodHook() {
+            @Suppress("UNCHECKED_CAST")
             override fun beforeHookedMethod(param: MethodHookParam) {
-                notify("onDatabaseQuerying") { plugin ->
-                    (plugin as IDatabaseHook).onDatabaseQuerying(param)
+                val thisObject    = param.thisObject
+                val factory       = param.args[0]
+                val sql           = param.args[1] as String
+                val selectionArgs = param.args[2] as Array<String>?
+                val editTable     = param.args[3] as String?
+                val cancellation  = param.args[4]
+                notifyWithOperation("onDatabaseQuerying", param) { plugin ->
+                    (plugin as IDatabaseHook).onDatabaseQuerying(
+                            thisObject, factory, sql, selectionArgs, editTable, cancellation)
                 }
             }
+            @Suppress("UNCHECKED_CAST")
             override fun afterHookedMethod(param: MethodHookParam) {
-                notify("onDatabaseQueried") { plugin ->
-                    (plugin as IDatabaseHook).onDatabaseQueried(param)
+                val thisObject    = param.thisObject
+                val factory       = param.args[0]
+                val sql           = param.args[1] as String
+                val selectionArgs = param.args[2] as Array<String>?
+                val editTable     = param.args[3] as String?
+                val cancellation  = param.args[4]
+                val result        = param.result
+                notifyWithOperation("onDatabaseQueried", param) { plugin ->
+                    (plugin as IDatabaseHook).onDatabaseQueried(
+                            thisObject, factory, sql, selectionArgs, editTable, cancellation, result)
                 }
             }
         })
@@ -55,13 +79,26 @@ object Database : EventCenter() {
                 SQLiteDatabase, "insertWithOnConflict",
                 C.String, C.String, C.ContentValues, C.Int, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
-                notify("onDatabaseInserting") { plugin ->
-                    (plugin as IDatabaseHook).onDatabaseInserting(param)
+                val thisObject        = param.thisObject
+                val table             = param.args[0] as String
+                val nullColumnHack    = param.args[1] as String
+                val initialValues     = param.args[2] as ContentValues?
+                val conflictAlgorithm = param.args[3] as Int
+                notifyWithOperation("onDatabaseInserting", param) { plugin ->
+                    (plugin as IDatabaseHook).onDatabaseInserting(
+                            thisObject, table, nullColumnHack, initialValues, conflictAlgorithm)
                 }
             }
             override fun afterHookedMethod(param: MethodHookParam) {
-                notify("onDatabaseInserted") { plugin ->
-                    (plugin as IDatabaseHook).onDatabaseInserted(param)
+                val thisObject        = param.thisObject
+                val table             = param.args[0] as String
+                val nullColumnHack    = param.args[1] as String
+                val initialValues     = param.args[2] as ContentValues?
+                val conflictAlgorithm = param.args[3] as Int
+                val result            = param.result as Long
+                notifyWithOperation("onDatabaseInserted", param) { plugin ->
+                    (plugin as IDatabaseHook).onDatabaseInserted(
+                            thisObject, table, nullColumnHack, initialValues, conflictAlgorithm, result)
                 }
             }
         })
@@ -69,14 +106,31 @@ object Database : EventCenter() {
         findAndHookMethod(
                 SQLiteDatabase, "updateWithOnConflict",
                 C.String, C.ContentValues, C.String, C.StringArray, C.Int, object : XC_MethodHook() {
+            @Suppress("UNCHECKED_CAST")
             override fun beforeHookedMethod(param: MethodHookParam) {
-                notify("onDatabaseUpdating") { plugin ->
-                    (plugin as IDatabaseHook).onDatabaseUpdating(param)
+                val thisObject        = param.thisObject
+                val table             = param.args[0] as String
+                val values            = param.args[1] as ContentValues
+                val whereClause       = param.args[2] as String?
+                val whereArgs         = param.args[3] as Array<String>?
+                val conflictAlgorithm = param.args[4] as Int
+                notifyWithOperation("onDatabaseUpdating", param) { plugin ->
+                    (plugin as IDatabaseHook).onDatabaseUpdating(
+                            thisObject, table, values, whereClause, whereArgs, conflictAlgorithm)
                 }
             }
+            @Suppress("UNCHECKED_CAST")
             override fun afterHookedMethod(param: MethodHookParam) {
-                notify("onDatabaseUpdated") { plugin ->
-                    (plugin as IDatabaseHook).onDatabaseUpdated(param)
+                val thisObject        = param.thisObject
+                val table             = param.args[0] as String
+                val values            = param.args[1] as ContentValues
+                val whereClause       = param.args[2] as String?
+                val whereArgs         = param.args[3] as Array<String>?
+                val conflictAlgorithm = param.args[4] as Int
+                val result            = param.result as Int
+                notifyWithOperation("onDatabaseUpdated", param) { plugin ->
+                    (plugin as IDatabaseHook).onDatabaseUpdated(
+                            thisObject, table, values, whereClause, whereArgs, conflictAlgorithm, result)
                 }
             }
         })
@@ -84,14 +138,25 @@ object Database : EventCenter() {
         findAndHookMethod(
                 SQLiteDatabase, "delete",
                 C.String, C.String, C.StringArray, object : XC_MethodHook() {
+            @Suppress("UNCHECKED_CAST")
             override fun beforeHookedMethod(param: MethodHookParam) {
-                notify("onDatabaseDeleting") { plugin ->
-                    (plugin as IDatabaseHook).onDatabaseDeleting(param)
+                val thisObject  = param.thisObject
+                val table       = param.args[0] as String
+                val whereClause = param.args[1] as String?
+                val whereArgs   = param.args[2] as Array<String>?
+                notifyWithOperation("onDatabaseDeleting", param) { plugin ->
+                    (plugin as IDatabaseHook).onDatabaseDeleting(thisObject, table, whereClause, whereArgs)
                 }
             }
+            @Suppress("UNCHECKED_CAST")
             override fun afterHookedMethod(param: MethodHookParam) {
-                notify("onDatabaseDeleted") { plugin ->
-                    (plugin as IDatabaseHook).onDatabaseDeleted(param)
+                val thisObject  = param.thisObject
+                val table       = param.args[0] as String
+                val whereClause = param.args[1] as String?
+                val whereArgs   = param.args[2] as Array<String>?
+                val result      = param.result as Int
+                notifyWithOperation("onDatabaseDeleted", param) { plugin ->
+                    (plugin as IDatabaseHook).onDatabaseDeleted(thisObject, table, whereClause, whereArgs, result)
                 }
             }
         })
@@ -99,14 +164,24 @@ object Database : EventCenter() {
         findAndHookMethod(
                 SQLiteDatabase, "executeSql",
                 C.String, C.ObjectArray, SQLiteCancellationSignal, object : XC_MethodHook() {
+            @Suppress("UNCHECKED_CAST")
             override fun beforeHookedMethod(param: MethodHookParam) {
-                notify("onDatabaseExecuting") { plugin ->
-                    (plugin as IDatabaseHook).onDatabaseExecuting(param)
+                val thisObject   = param.thisObject
+                val sql          = param.args[0] as String
+                val bindArgs     = param.args[1] as Array<Any?>?
+                val cancellation = param.args[2]
+                notifyWithInterrupt("onDatabaseExecuting", param) { plugin ->
+                    (plugin as IDatabaseHook).onDatabaseExecuting(thisObject, sql, bindArgs, cancellation)
                 }
             }
+            @Suppress("UNCHECKED_CAST")
             override fun afterHookedMethod(param: MethodHookParam) {
+                val thisObject   = param.thisObject
+                val sql          = param.args[0] as String
+                val bindArgs     = param.args[1] as Array<Any?>?
+                val cancellation = param.args[2]
                 notify("onDatabaseExecuted") { plugin ->
-                    (plugin as IDatabaseHook).onDatabaseExecuted(param)
+                    (plugin as IDatabaseHook).onDatabaseExecuted(thisObject, sql, bindArgs, cancellation)
                 }
             }
         })

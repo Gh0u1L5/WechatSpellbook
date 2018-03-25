@@ -80,7 +80,7 @@ object MenuAppender : EventCenter() {
 
                 currentMenuItems = notifyForResult("onPopupMenuForContactsCreating") { plugin ->
                     (plugin as IPopupMenuHook).onPopupMenuForContactsCreating(currentUsername ?: "")
-                }.sortedBy { it.itemId }
+                }.flatten().sortedBy { it.itemId }
 
                 currentMenuItems?.forEach {
                     val item = menu.add(it.groupId, it.itemId, it.order, it.title)
@@ -117,7 +117,7 @@ object MenuAppender : EventCenter() {
 
                 currentMenuItems = notifyForResult("onPopupMenuForConversationsCreating") { plugin ->
                     (plugin as IPopupMenuHook).onPopupMenuForConversationsCreating(currentUsername ?: "")
-                }.sortedBy { it.itemId }
+                }.flatten().sortedBy { it.itemId }
 
                 currentMenuItems?.forEach {
                     val item = menu.add(it.groupId, it.itemId, it.order, it.title)

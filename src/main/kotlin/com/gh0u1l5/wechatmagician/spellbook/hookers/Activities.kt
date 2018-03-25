@@ -22,7 +22,7 @@ object Activities : EventCenter() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val activity = param.thisObject as? Activity ?: return
                 val menu = param.args[0] as? Menu ?: return
-                notify("onMMActivityOptionsMenuCreated") { plugin ->
+                notifyParallel("onMMActivityOptionsMenuCreated") { plugin ->
                     (plugin as IActivityHook).onMMActivityOptionsMenuCreated(activity, menu)
                 }
             }
@@ -31,7 +31,7 @@ object Activities : EventCenter() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val activity = param.thisObject as? Activity ?: return
                 val savedInstanceState = param.args[0] as Bundle?
-                notify("onActivityCreating") { plugin ->
+                notifyParallel("onActivityCreating") { plugin ->
                     (plugin as IActivityHook).onActivityCreating(activity, savedInstanceState)
                 }
             }
@@ -39,7 +39,7 @@ object Activities : EventCenter() {
         findAndHookMethod(C.Activity, "onStart", object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val activity = param.thisObject as? Activity ?: return
-                notify("onActivityStarting") { plugin ->
+                notifyParallel("onActivityStarting") { plugin ->
                     (plugin as IActivityHook).onActivityStarting(activity)
                 }
             }
@@ -47,7 +47,7 @@ object Activities : EventCenter() {
         findAndHookMethod(C.Activity, "onResume", object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val activity = param.thisObject as? Activity ?: return
-                notify("onActivityResuming") { plugin ->
+                notifyParallel("onActivityResuming") { plugin ->
                     (plugin as IActivityHook).onActivityResuming(activity)
                 }
             }
