@@ -44,31 +44,35 @@ object ListViewHider {
     private val records: MutableMap<BaseAdapter, Record> = ConcurrentHashMap()
 
     fun register(adapter: BaseAdapter, predicateName: String, predicateBody: Predicate) {
-        if (adapter in records) {
-            records[adapter]!!.predicates += (predicateName to predicateBody)
-        } else {
+        val record = records[adapter]
+        if (record == null) {
             records[adapter] = Record(emptyList(), mapOf(predicateName to predicateBody))
+            return
+        }
+        synchronized(record) {
+            record.predicates += (predicateName to predicateBody)
         }
     }
 
     private fun updateAdapterSections(param: XC_MethodHook.MethodHookParam) {
         val adapter = param.thisObject as BaseAdapter
         val record = records[adapter] ?: return
-
-        record.sections = emptyList()
-        val initial = listOf(Section(0, adapter.count, 0))
-        val predicates = record.predicates.values
-        record.sections = (0 until adapter.count).filter { index ->
-            // Hide the items satisfying any one of the predicates
-            val item = adapter.getItem(index)
-            predicates.forEach { predicate ->
-                if (predicate(item)) {
-                    return@filter true
+        synchronized(record) {
+            record.sections = emptyList()
+            val initial = listOf(Section(0, adapter.count, 0))
+            val predicates = record.predicates.values
+            record.sections = (0 until adapter.count).filter { index ->
+                // Hide the items satisfying any one of the predicates
+                val item = adapter.getItem(index)
+                predicates.forEach { predicate ->
+                    if (predicate(item)) {
+                        return@filter true
+                    }
                 }
+                return@filter false
+            }.fold(initial) { sections, index ->
+                sections.dropLast(1) + sections.last().split(index)
             }
-            return@filter false
-        }.fold(initial) { sections, index ->
-            sections.dropLast(1) + sections.last().split(index)
         }
     }
 
@@ -78,11 +82,13 @@ object ListViewHider {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val adapter = param.thisObject as BaseAdapter
                 val index = param.args[0] as Int
-                val sections = records[adapter]?.sections ?: return
-                sections.forEach { section ->
-                    if (index in section) {
-                        param.args[0] = section.base + (index - section.start)
-                        return
+                val record = records[adapter] ?: return
+                synchronized(record) {
+                    record.sections.forEach { section ->
+                        if (index in section) {
+                            param.args[0] = section.base + (index - section.start)
+                            return
+                        }
                     }
                 }
             }
@@ -92,9 +98,11 @@ object ListViewHider {
         findAndHookMethod(MMBaseAdapter, "getCount", object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val adapter = param.thisObject as BaseAdapter
-                val sections = records[adapter]?.sections ?: return
-                if (sections.isNotEmpty()) {
-                    param.result = sections.sumBy { it.size() }
+                val record = records[adapter] ?: return
+                synchronized(record) {
+                    if (record.sections.isNotEmpty()) {
+                        param.result = record.sections.sumBy { it.size() }
+                    }
                 }
             }
         })
