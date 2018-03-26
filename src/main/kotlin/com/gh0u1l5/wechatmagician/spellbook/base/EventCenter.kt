@@ -33,7 +33,7 @@ abstract class EventCenter: HookerProvider {
     }
 
     fun notify(event: String, action: (Any) -> Unit) {
-        if (event == "") {
+        if (event.isEmpty()) {
             throw IllegalArgumentException("event cannot be empty!")
         }
         registries[event]?.forEach {
@@ -42,7 +42,7 @@ abstract class EventCenter: HookerProvider {
     }
 
     fun notifyParallel(event: String, action: (Any) -> Unit) {
-        if (event == "") {
+        if (event.isEmpty()) {
             throw IllegalArgumentException("event cannot be empty!")
         }
         registries[event]?.map { observer ->
@@ -54,7 +54,7 @@ abstract class EventCenter: HookerProvider {
      * If the hooked method has no return type, then the action may only decide whether interrupt it or not.
      */
     fun notifyWithInterrupt(event: String, param: XC_MethodHook.MethodHookParam, action: (Any) -> Boolean) {
-        if (event == "") {
+        if (event.isEmpty()) {
             throw IllegalArgumentException("event cannot be empty!")
         }
         registries[event]?.forEach {
@@ -71,7 +71,7 @@ abstract class EventCenter: HookerProvider {
      * If the hooked method has a return type, then the action may have an general operation.
      */
     fun notifyWithOperation(event: String, param: XC_MethodHook.MethodHookParam, action: (Any) -> Operation<*>) {
-        if (event == "") {
+        if (event.isEmpty()) {
             throw IllegalArgumentException("event cannot be empty!")
         }
         var priority = -1
@@ -87,7 +87,7 @@ abstract class EventCenter: HookerProvider {
     }
 
     fun <T: Any>notifyForResult(event: String, action: (Any) -> T?): List<T> {
-        if (event == "") {
+        if (event.isEmpty()) {
             throw IllegalArgumentException("event cannot be empty!")
         }
         return registries[event]?.mapNotNull {
