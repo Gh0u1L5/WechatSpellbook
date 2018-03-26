@@ -1,8 +1,7 @@
 package com.gh0u1l5.wechatmagician.spellbook.hookers
 
-import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
-import com.gh0u1l5.wechatmagician.spellbook.annotations.WechatHookMethod
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
+import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IImageStorageHook
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IMessageStorageHook
 import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.Classes.ImgInfoStorage
@@ -19,7 +18,17 @@ object Storage : EventCenter() {
     override val interfaces: List<Class<*>>
         get() = listOf(IMessageStorageHook::class.java, IImageStorageHook::class.java)
 
-    @WechatHookMethod @JvmStatic fun hookMessageStorage() {
+    override fun provideEventHooker(event: String): Hooker? {
+        return when (event) {
+            "onMessageStorageCreated" -> onMessageStorageCreateHooker
+            "onMessageStorageInserting", "onMessageStorageInserted" -> onMessageStorageInsertHooker
+            "onImageStorageCreated" -> onImageStorageCreateHooker
+            "onImageStorageLoading", "onImageStorageLoaded" -> onImageStorageLoadHooker
+            else -> throw IllegalArgumentException("Unknown event: $event")
+        }
+    }
+
+    private val onMessageStorageCreateHooker = Hooker {
         hookAllConstructors(MsgInfoStorage, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 notify("onMessageStorageCreated") { plugin ->
@@ -27,7 +36,9 @@ object Storage : EventCenter() {
                 }
             }
         })
+    }
 
+    private val onMessageStorageInsertHooker = Hooker {
         findAndHookMethod(MsgInfoStorage, MsgInfoStorage_insert, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val msgObject = param.args[0]
@@ -44,11 +55,9 @@ object Storage : EventCenter() {
                 }
             }
         })
-
-        WechatStatus.toggle(WechatStatus.StatusFlag.STATUS_FLAG_MSG_STORAGE)
     }
 
-    @WechatHookMethod @JvmStatic fun hookImageStorage() {
+    private val onImageStorageCreateHooker = Hooker {
         hookAllConstructors(ImgInfoStorage, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 notify("onImageStorageCreated") { plugin ->
@@ -56,7 +65,9 @@ object Storage : EventCenter() {
                 }
             }
         })
+    }
 
+    private val onImageStorageLoadHooker = Hooker {
         findAndHookMethod(ImgInfoStorage, ImgInfoStorage_load, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val imageId = param.args[0] as String?
@@ -75,7 +86,5 @@ object Storage : EventCenter() {
                 }
             }
         })
-
-        WechatStatus.toggle(WechatStatus.StatusFlag.STATUS_FLAG_IMG_STORAGE)
     }
 }

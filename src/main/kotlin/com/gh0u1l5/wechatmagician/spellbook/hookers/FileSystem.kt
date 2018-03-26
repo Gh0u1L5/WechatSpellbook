@@ -1,9 +1,8 @@
 package com.gh0u1l5.wechatmagician.spellbook.hookers
 
 import com.gh0u1l5.wechatmagician.spellbook.C
-import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
-import com.gh0u1l5.wechatmagician.spellbook.annotations.WechatHookMethod
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
+import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IFileSystemHook
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers.findAndHookConstructor
@@ -15,7 +14,16 @@ object FileSystem : EventCenter() {
     override val interfaces: List<Class<*>>
         get() = listOf(IFileSystemHook::class.java)
 
-    @WechatHookMethod @JvmStatic fun hookEvents() {
+    override fun provideEventHooker(event: String): Hooker? {
+        return when (event) {
+            "onFileDeleting", "onFileDeleted" -> onDeleteHooker
+            "onFileReading" -> onReadHooker
+            "onFileWriting" -> onWriteHooker
+            else -> throw IllegalArgumentException("Unknown event: $event")
+        }
+    }
+
+    private val onDeleteHooker = Hooker {
         findAndHookMethod(C.File, "delete", object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val file = param.thisObject as File
@@ -31,6 +39,9 @@ object FileSystem : EventCenter() {
                 }
             }
         })
+    }
+
+    private val onReadHooker = Hooker {
         findAndHookConstructor(C.FileInputStream, C.File, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val file = param.args[0] as File
@@ -39,6 +50,9 @@ object FileSystem : EventCenter() {
                 }
             }
         })
+    }
+
+    private val onWriteHooker = Hooker {
         findAndHookConstructor(C.FileOutputStream, C.File, C.Boolean, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val file   = param.args[0] as File
@@ -48,6 +62,5 @@ object FileSystem : EventCenter() {
                 }
             }
         })
-        WechatStatus.toggle(WechatStatus.StatusFlag.STATUS_FLAG_FILESYSTEM)
     }
 }

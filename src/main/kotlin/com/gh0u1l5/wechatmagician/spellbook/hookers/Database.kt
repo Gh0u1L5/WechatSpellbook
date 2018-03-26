@@ -2,9 +2,8 @@ package com.gh0u1l5.wechatmagician.spellbook.hookers
 
 import android.content.ContentValues
 import com.gh0u1l5.wechatmagician.spellbook.C
-import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
-import com.gh0u1l5.wechatmagician.spellbook.annotations.WechatHookMethod
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
+import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IDatabaseHook
 import com.gh0u1l5.wechatmagician.spellbook.mirror.wcdb.Classes.SQLiteErrorHandler
 import com.gh0u1l5.wechatmagician.spellbook.mirror.wcdb.database.Classes.SQLiteCursorFactory
@@ -18,7 +17,19 @@ object Database : EventCenter() {
     override val interfaces: List<Class<*>>
         get() = listOf(IDatabaseHook::class.java)
 
-    @WechatHookMethod @JvmStatic fun hookEvents() {
+    override fun provideEventHooker(event: String): Hooker? {
+        return when (event) {
+            "onDatabaseOpening", "onDatabaseOpened"     -> onOpenHooker
+            "onDatabaseQuerying", "onDatabaseQueried"   -> onQueryHooker
+            "onDatabaseInserting", "onDatabaseInserted" -> onInsertHooker
+            "onDatabaseUpdating", "onDatabaseUpdated"   -> onUpdateHooker
+            "onDatabaseDeleting", "onDatabaseDeleted"   -> onDeleteHooker
+            "onDatabaseExecuting", "onDatabaseExecuted" -> onExecuteHooker
+            else -> throw IllegalArgumentException("Unknown event: $event")
+        }
+    }
+
+    private val onOpenHooker = Hooker {
         findAndHookMethod(
                 SQLiteDatabase, "openDatabase",
                 C.String, SQLiteCursorFactory, C.Int, SQLiteErrorHandler, object : XC_MethodHook() {
@@ -42,7 +53,9 @@ object Database : EventCenter() {
                 }
             }
         })
+    }
 
+    private val onQueryHooker = Hooker {
         findAndHookMethod(
                 SQLiteDatabase, "rawQueryWithFactory",
                 SQLiteCursorFactory, C.String, C.StringArray, C.String, SQLiteCancellationSignal, object : XC_MethodHook() {
@@ -74,7 +87,9 @@ object Database : EventCenter() {
                 }
             }
         })
+    }
 
+    private val onInsertHooker = Hooker {
         findAndHookMethod(
                 SQLiteDatabase, "insertWithOnConflict",
                 C.String, C.String, C.ContentValues, C.Int, object : XC_MethodHook() {
@@ -102,7 +117,9 @@ object Database : EventCenter() {
                 }
             }
         })
+    }
 
+    private val onUpdateHooker = Hooker {
         findAndHookMethod(
                 SQLiteDatabase, "updateWithOnConflict",
                 C.String, C.ContentValues, C.String, C.StringArray, C.Int, object : XC_MethodHook() {
@@ -134,7 +151,9 @@ object Database : EventCenter() {
                 }
             }
         })
+    }
 
+    private val onDeleteHooker = Hooker {
         findAndHookMethod(
                 SQLiteDatabase, "delete",
                 C.String, C.String, C.StringArray, object : XC_MethodHook() {
@@ -160,7 +179,9 @@ object Database : EventCenter() {
                 }
             }
         })
+    }
 
+    private val onExecuteHooker = Hooker {
         findAndHookMethod(
                 SQLiteDatabase, "executeSql",
                 C.String, C.ObjectArray, SQLiteCancellationSignal, object : XC_MethodHook() {
@@ -185,7 +206,5 @@ object Database : EventCenter() {
                 }
             }
         })
-
-        WechatStatus.toggle(WechatStatus.StatusFlag.STATUS_FLAG_DATABASE)
     }
 }

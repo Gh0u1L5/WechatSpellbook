@@ -4,9 +4,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import com.gh0u1l5.wechatmagician.spellbook.C
-import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
-import com.gh0u1l5.wechatmagician.spellbook.annotations.WechatHookMethod
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
+import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IAdapterHook
 import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.ui.contact.Classes.AddressAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.ui.conversation.Classes.ConversationWithCacheAdapter
@@ -20,7 +19,20 @@ object Adapters : EventCenter() {
     override val interfaces: List<Class<*>>
         get() = listOf(IAdapterHook::class.java)
 
-    @WechatHookMethod @JvmStatic fun hookEvents() {
+    override fun provideEventHooker(event: String): Hooker? {
+        return when (event) {
+            "onAddressAdapterCreated" ->
+                onAddressAdapterCreateHooker
+            "onConversationAdapterCreated" ->
+                onConversationWithCacheAdapterCreateHooker
+            "onHeaderViewListAdapterGettingView", "onHeaderViewListAdapterGotView" ->
+                onHeaderViewListAdapterGetViewHooker
+            else ->
+                throw IllegalArgumentException("Unknown event: $event")
+        }
+    }
+
+    private val onAddressAdapterCreateHooker = Hooker {
         hookAllConstructors(AddressAdapter, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val adapter = param.thisObject as? BaseAdapter
@@ -33,6 +45,9 @@ object Adapters : EventCenter() {
                 }
             }
         })
+    }
+
+    private val onConversationWithCacheAdapterCreateHooker = Hooker {
         hookAllConstructors(ConversationWithCacheAdapter, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val adapter = param.thisObject as? BaseAdapter
@@ -45,6 +60,9 @@ object Adapters : EventCenter() {
                 }
             }
         })
+    }
+
+    private val onHeaderViewListAdapterGetViewHooker = Hooker {
         findAndHookMethod(
                 C.HeaderViewListAdapter, "getView",
                 C.Int, C.View, C.ViewGroup, object : XC_MethodHook() {
@@ -68,7 +86,5 @@ object Adapters : EventCenter() {
                 }
             }
         })
-
-        WechatStatus.toggle(WechatStatus.StatusFlag.STATUS_FLAG_ADAPTERS)
     }
 }

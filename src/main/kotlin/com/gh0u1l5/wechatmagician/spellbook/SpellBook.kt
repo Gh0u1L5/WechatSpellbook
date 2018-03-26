@@ -2,12 +2,13 @@ package com.gh0u1l5.wechatmagician.spellbook
 
 import android.content.Context
 import android.os.Build
-import com.gh0u1l5.wechatmagician.spellbook.annotations.WechatHookMethod
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
+import com.gh0u1l5.wechatmagician.spellbook.base.HookerProvider
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.hookers.*
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
+import com.gh0u1l5.wechatmagician.spellbook.util.XposedUtil
 import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.*
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -19,16 +20,14 @@ import java.io.File
  * documents](https://github.com/Gh0u1L5/WechatSpellbook/wiki) for developers.
  */
 object SpellBook {
-
     /**
-     * A list holding the official hookers implemented by Wechat Magician SpellBook
+     * A list holding the event centers that actually notify the plugins.
      */
-    private val officialHookers: List<Any> = listOf (
+    private val centers: List<EventCenter> = listOf(
             Activities,
             Adapters,
             Database,
             FileSystem,
-            ListViewHider,
             MenuAppender,
             Notifications,
             SearchBar,
@@ -36,15 +35,6 @@ object SpellBook {
             UriRouter,
             XmlParser
     )
-    /**
-     * True if the official hookers is loading or already loaded.
-     */
-    @Volatile private var isOfficialHookersLoaded = false
-
-    /**
-     * A list holding the event centers that actually notify the plugins.
-     */
-    private val centers: List<EventCenter> = officialHookers.mapNotNull { it as? EventCenter }
 
     /**
      * Returns whether the current process seems to be an important process in Wechat. Currently,
@@ -134,15 +124,14 @@ object SpellBook {
      * be the same one passed to [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage].
      * @param plugins the list of custom plugins written by the developer, which should implement
      * one or more interfaces in package [com.gh0u1l5.wechatmagician.spellbook.interfaces].
-     * @param hookers the list of custom hookers written by the developer, which should contain one
-     * or more methods that are annotated as [WechatHookMethod].
+     * @param hookers the list of custom hookers written by the developer, which should implement
+     * the [HookerProvider] and override [HookerProvider.provideStaticHookers] method.
      */
-    fun startup(lpparam: XC_LoadPackage.LoadPackageParam, plugins: List<Any>?, hookers: List<Any>?) {
+    fun startup(lpparam: XC_LoadPackage.LoadPackageParam, plugins: List<Any>?, hookers: List<HookerProvider>?) {
         log("Wechat SpellBook: ${plugins?.size ?: 0} plugins, ${hookers?.size ?: 0} hookers.")
         WechatGlobal.init(lpparam)
         registerPlugins(plugins)
-        registerOfficialHookers()
-        registerCustomHookers(hookers)
+        registerHookers(hookers)
     }
 
     /**
@@ -167,35 +156,16 @@ object SpellBook {
     }
 
     /**
-     * Registers all the official hookers to the Xposed framework using [tryHook].
-     */
-    private fun registerOfficialHookers() {
-        if (isOfficialHookersLoaded) {
-            return
-        }
-        isOfficialHookersLoaded = true
-        officialHookers.forEach { hooker ->
-            hooker::class.java.declaredMethods.forEach { method ->
-                val isHookMethod = method.isAnnotationPresent(WechatHookMethod::class.java)
-                if (isHookMethod) {
-                    tryHook { method.invoke(null) }
-                }
-            }
-        }
-    }
-
-    /**
      * Registers all the custom hookers to the Xposed framework using [tryHook].
      */
-    private fun registerCustomHookers(customHookers: List<Any>?) {
-        if (customHookers == null) {
+    private fun registerHookers(hookers: List<HookerProvider>?) {
+        if (hookers == null) {
             return
         }
-        customHookers.forEach { hooker ->
-            hooker::class.java.declaredMethods.forEach { method ->
-                val isHookMethod = method.isAnnotationPresent(WechatHookMethod::class.java)
-                if (isHookMethod) {
-                    tryHook { method.invoke(null) }
+        (listOf(ListViewHider, MenuAppender) + hookers).forEach { provider ->
+            provider.provideStaticHookers()?.forEach { hooker ->
+                if (!hooker.hasHooked) {
+                    XposedUtil.postHooker(hooker)
                 }
             }
         }

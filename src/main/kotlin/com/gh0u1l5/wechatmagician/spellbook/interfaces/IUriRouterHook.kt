@@ -11,5 +11,5 @@ interface IUriRouterHook {
      * @param activity an activity that can be used as a [Context].
      * @param uri the uri sent from the other applications. It should start with "weixin://magician/".
      */
-    fun onUriRouterReceiving(activity: Activity, uri: Uri) { }
+    fun onReceiveUri(activity: Activity, uri: Uri) { }
 }

@@ -2,10 +2,11 @@ package com.gh0u1l5.wechatmagician.spellbook.base
 
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
+import com.gh0u1l5.wechatmagician.spellbook.util.XposedUtil
 import de.robv.android.xposed.XC_MethodHook
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class EventCenter {
+abstract class EventCenter: HookerProvider {
 
     abstract val interfaces: List<Class<*>>
 
@@ -16,6 +17,10 @@ abstract class EventCenter {
 
     private fun register(event: String, observer: Any) {
         if (observer.hasEvent(event)) {
+            val hooker = provideEventHooker(event)
+            if (hooker != null && !hooker.hasHooked) {
+                XposedUtil.postHooker(hooker)
+            }
             val added = registries[event] ?: emptySet()
             registries[event] = added + observer
         }

@@ -7,8 +7,8 @@ import android.view.View
 import android.widget.AdapterView
 import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
-import com.gh0u1l5.wechatmagician.spellbook.annotations.WechatHookMethod
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
+import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IPopupMenuHook
 import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.ui.base.Classes.MMListPopupWindow
 import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.ui.contact.Classes.AddressUI
@@ -34,7 +34,19 @@ object MenuAppender : EventCenter() {
     @Volatile var currentUsername: String? = null
     @Volatile var currentMenuItems: List<PopupMenuItem>? = null
 
-    @WechatHookMethod @JvmStatic fun hijackPopupMenuEvents() {
+    override fun provideStaticHookers(): List<Hooker>? {
+        return listOf(onMMListPopupWindowShowHooker, onMMListPopupWindowDismissHooker)
+    }
+
+    override fun provideEventHooker(event: String): Hooker? {
+        return when (event) {
+            "onPopupMenuForContactsCreating" -> onPopupMenuForContactsCreateHooker
+            "onPopupMenuForConversationsCreating" -> onPopupMenuForConversationsCreateHooker
+            else -> throw IllegalArgumentException("Unknown event: $event")
+        }
+    }
+
+    private val onMMListPopupWindowShowHooker = Hooker {
         findAndHookMethod(MMListPopupWindow, "show", object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val listenerField = findFirstFieldByExactType(MMListPopupWindow, C.AdapterView_OnItemClickListener)
@@ -51,6 +63,9 @@ object MenuAppender : EventCenter() {
                 })
             }
         })
+    }
+
+    private val onMMListPopupWindowDismissHooker = Hooker {
         findAndHookMethod(MMListPopupWindow, "dismiss", object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam?) {
                 currentUsername = null
@@ -59,7 +74,7 @@ object MenuAppender : EventCenter() {
         })
     }
 
-    @WechatHookMethod @JvmStatic fun hijackPopupMenuForContacts() {
+    private val onPopupMenuForContactsCreateHooker = Hooker {
         findAndHookMethod(
                 ContactLongClickListener, "onItemLongClick",
                 C.AdapterView, C.View, C.Int, C.Long, object : XC_MethodHook() {
@@ -95,7 +110,7 @@ object MenuAppender : EventCenter() {
         WechatStatus.toggle(WechatStatus.StatusFlag.STATUS_FLAG_CONTACT_POPUP)
     }
 
-    @WechatHookMethod @JvmStatic fun hijackPopupMenuForConversations() {
+    private val onPopupMenuForConversationsCreateHooker = Hooker {
         findAndHookMethod(
                 ConversationLongClickListener, "onItemLongClick",
                 C.AdapterView, C.View, C.Int, C.Long, object : XC_MethodHook() {

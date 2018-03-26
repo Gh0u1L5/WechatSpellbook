@@ -4,7 +4,8 @@ import android.widget.BaseAdapter
 import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.Predicate
 import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
-import com.gh0u1l5.wechatmagician.spellbook.annotations.WechatHookMethod
+import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
+import com.gh0u1l5.wechatmagician.spellbook.base.HookerProvider
 import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.ui.Classes.MMBaseAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.ui.Methods.MMBaseAdapter_getItemInternal
 import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.ui.contact.Classes.AddressAdapter
@@ -13,7 +14,7 @@ import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 import java.util.concurrent.ConcurrentHashMap
 
-object ListViewHider {
+object ListViewHider : HookerProvider {
 
     data class Section(
             val start: Int,  // Inclusive
@@ -76,7 +77,11 @@ object ListViewHider {
         }
     }
 
-    @WechatHookMethod @JvmStatic fun hijackMMBaseAdapter() {
+    override fun provideStaticHookers(): List<Hooker>? {
+        return listOf(MMBaseAdapterHooker)
+    }
+
+    private val MMBaseAdapterHooker = Hooker {
         // Hook getItem() of base adapters
         findAndHookMethod(MMBaseAdapter, MMBaseAdapter_getItemInternal, C.Int, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
