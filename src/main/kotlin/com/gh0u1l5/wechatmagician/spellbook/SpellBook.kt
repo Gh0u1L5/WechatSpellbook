@@ -1,13 +1,11 @@
 package com.gh0u1l5.wechatmagician.spellbook
 
 import android.content.Context
-import android.os.Build
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.HookerProvider
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.hookers.*
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
-import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
 import com.gh0u1l5.wechatmagician.spellbook.util.XposedUtil
 import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.*
@@ -105,19 +103,6 @@ object SpellBook {
     }
 
     /**
-     * Hooks functions in suitable strategy for corresponding API levels. NOTE: for Android 7.X or
-     * later, multi-thread causes unexpected crashes with WeXposed, so we drop this feature for now.
-     *
-     * @param hook the callback function that actually hook functions using Xposed.
-     */
-    private inline fun tryHook(crossinline hook: () -> Unit) {
-        when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> tryVerbosely { hook() }
-            else -> tryAsynchronously { try { hook() } catch (t: Throwable) { /* Ignore */ } }
-        }
-    }
-
-    /**
      * Initializes and starts up the SpellBook engine.
      *
      * @param lpparam the LoadPackageParam object that describes the current process, which should
@@ -156,7 +141,7 @@ object SpellBook {
     }
 
     /**
-     * Registers all the custom hookers to the Xposed framework using [tryHook].
+     * Registers all the custom hookers to the Xposed framework using [XposedUtil.postHooker].
      */
     private fun registerHookers(hookers: List<HookerProvider>?) {
         if (hookers == null) {

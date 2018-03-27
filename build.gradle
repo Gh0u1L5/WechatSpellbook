@@ -1,9 +1,9 @@
 // 重复添加同样的依赖，以保证Spellbook能够独立编译
 buildscript {
     ext {
-        android_gradle_version = '3.2.0-alpha06'
+        android_gradle_version = '3.2.0-alpha07'
         dokka_version = '0.9.14'
-        kotlin_version = '1.2.30'
+        kotlin_version = '1.2.31'
     }
     repositories {
         jcenter()

@@ -96,7 +96,7 @@ object Database : EventCenter() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val thisObject        = param.thisObject
                 val table             = param.args[0] as String
-                val nullColumnHack    = param.args[1] as String
+                val nullColumnHack    = param.args[1] as String?
                 val initialValues     = param.args[2] as ContentValues?
                 val conflictAlgorithm = param.args[3] as Int
                 notifyWithOperation("onDatabaseInserting", param) { plugin ->
@@ -107,7 +107,7 @@ object Database : EventCenter() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val thisObject        = param.thisObject
                 val table             = param.args[0] as String
-                val nullColumnHack    = param.args[1] as String
+                val nullColumnHack    = param.args[1] as String?
                 val initialValues     = param.args[2] as ContentValues?
                 val conflictAlgorithm = param.args[3] as Int
                 val result            = param.result as Long

@@ -76,7 +76,7 @@ interface IDatabaseHook {
      * otherwise return [Operation.nop]. The Long number represents the row ID of the newly inserted
      * row OR -1 if no row is inserted.
      */
-    fun onDatabaseInserting(thisObject: Any, table: String, nullColumnHack: String, initialValues: ContentValues?, conflictAlgorithm: Int): Operation<Long?> = nop()
+    fun onDatabaseInserting(thisObject: Any, table: String, nullColumnHack: String?, initialValues: ContentValues?, conflictAlgorithm: Int): Operation<Long?> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object has returned from [SQLiteDatabase.insertWithOnConflict] method.
@@ -91,7 +91,7 @@ interface IDatabaseHook {
      * @return to replace the original result, return a Long number wrapped by [Operation.replacement],
      * otherwise return [Operation.nop].
      */
-    fun onDatabaseInserted(thisObject: Any, table: String, nullColumnHack: String, initialValues: ContentValues?, conflictAlgorithm: Int, result: Long): Operation<Long?> = nop()
+    fun onDatabaseInserted(thisObject: Any, table: String, nullColumnHack: String?, initialValues: ContentValues?, conflictAlgorithm: Int, result: Long): Operation<Long?> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object is going to invoke [SQLiteDatabase.updateWithOnConflict] method.
