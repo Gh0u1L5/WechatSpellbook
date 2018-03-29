@@ -2,7 +2,7 @@
 buildscript {
     ext {
         android_gradle_version = '3.2.0-alpha07'
-        dokka_version = '0.9.14'
+        dokka_version = '0.9.13'
         kotlin_version = '1.2.31'
     }
     repositories {
@@ -72,4 +72,5 @@ dependencies {
 task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = 'javadoc'
     outputDirectory = "$buildDir/dokkaJavadoc"
+    sourceDirs = files('src/main/kotlin')
 }
