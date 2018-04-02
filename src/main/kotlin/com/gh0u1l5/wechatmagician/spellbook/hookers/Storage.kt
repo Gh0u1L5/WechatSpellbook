@@ -4,11 +4,10 @@ import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IImageStorageHook
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IMessageStorageHook
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.Classes.ImgInfoStorage
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.Methods.ImgInfoStorage_load
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.storage.Classes.MsgInfoStorage
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.storage.Methods.MsgInfoStorage_insert
-import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findAndHookMethod
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.Classes.ImgInfoStorage
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.Methods.ImgInfoStorage_load
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.storage.Classes.MsgInfoStorage
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.storage.Methods.MsgInfoStorage_insert
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge.hookAllConstructors
 import de.robv.android.xposed.XposedHelpers.getLongField
