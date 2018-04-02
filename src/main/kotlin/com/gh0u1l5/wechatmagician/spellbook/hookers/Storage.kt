@@ -10,6 +10,7 @@ import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.storage.Classe
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.storage.Methods.MsgInfoStorage_insert
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge.hookAllConstructors
+import de.robv.android.xposed.XposedBridge.hookMethod
 import de.robv.android.xposed.XposedHelpers.getLongField
 
 object Storage : EventCenter() {
@@ -38,7 +39,7 @@ object Storage : EventCenter() {
     }
 
     private val onMessageStorageInsertHooker = Hooker {
-        findAndHookMethod(MsgInfoStorage, MsgInfoStorage_insert, object : XC_MethodHook() {
+        hookMethod(MsgInfoStorage_insert, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val msgObject = param.args[0]
                 val msgId = getLongField(msgObject, "field_msgId")
@@ -67,7 +68,7 @@ object Storage : EventCenter() {
     }
 
     private val onImageStorageLoadHooker = Hooker {
-        findAndHookMethod(ImgInfoStorage, ImgInfoStorage_load, object : XC_MethodHook() {
+        hookMethod(ImgInfoStorage_load, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val imageId = param.args[0] as String?
                 val prefix = param.args[1] as String?
