@@ -31,6 +31,7 @@ object SpellBook {
             SearchBar,
             Storage,
             UriRouter,
+            XLog,
             XmlParser
     )
 

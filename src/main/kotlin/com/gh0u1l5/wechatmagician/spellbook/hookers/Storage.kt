@@ -4,13 +4,13 @@ import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IImageStorageHook
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IMessageStorageHook
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.Classes.ImgInfoStorage
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.Methods.ImgInfoStorage_load
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.storage.Classes.MsgInfoStorage
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.storage.Methods.MsgInfoStorage_insert
-import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findAndHookMethod
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.Classes.ImgInfoStorage
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.Methods.ImgInfoStorage_load
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.storage.Classes.MsgInfoStorage
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.storage.Methods.MsgInfoStorage_insert
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge.hookAllConstructors
+import de.robv.android.xposed.XposedBridge.hookMethod
 import de.robv.android.xposed.XposedHelpers.getLongField
 
 object Storage : EventCenter() {
@@ -39,7 +39,7 @@ object Storage : EventCenter() {
     }
 
     private val onMessageStorageInsertHooker = Hooker {
-        findAndHookMethod(MsgInfoStorage, MsgInfoStorage_insert, object : XC_MethodHook() {
+        hookMethod(MsgInfoStorage_insert, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val msgObject = param.args[0]
                 val msgId = getLongField(msgObject, "field_msgId")
@@ -68,7 +68,7 @@ object Storage : EventCenter() {
     }
 
     private val onImageStorageLoadHooker = Hooker {
-        findAndHookMethod(ImgInfoStorage, ImgInfoStorage_load, object : XC_MethodHook() {
+        hookMethod(ImgInfoStorage_load, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val imageId = param.args[0] as String?
                 val prefix = param.args[1] as String?

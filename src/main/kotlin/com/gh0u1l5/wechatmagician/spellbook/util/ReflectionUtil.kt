@@ -1,6 +1,7 @@
 package com.gh0u1l5.wechatmagician.spellbook.util
 
 import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XposedBridge.hookMethod
 import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.XposedHelpers.*
@@ -134,15 +135,11 @@ object ReflectionUtil {
         } ?: emptyList()
     }
 
-    @JvmStatic fun findAndHookMethod(clazz: Class<*>?, method: Method?, callback: XC_MethodHook) {
+    @JvmStatic fun hookAllMethodsInClass(clazz: Class<*>?, callback: XC_MethodHook) {
         if (clazz == null) {
-            log("findAndHookMethod: clazz should not be null")
+            log("findAndHookMethodsInClass: clazz should not be null")
             return
         }
-        if (method == null) {
-            log("findAndHookMethod: method should not be null")
-            return
-        }
-        findAndHookMethod(clazz, method.name, *method.parameterTypes, callback)
+        clazz.declaredMethods.forEach { method -> hookMethod(method, callback) }
     }
 }

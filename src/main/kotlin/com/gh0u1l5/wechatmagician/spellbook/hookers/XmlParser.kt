@@ -4,10 +4,9 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IXmlParserHook
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.sdk.platformtools.Classes.XmlParser
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.sdk.platformtools.Methods.XmlParser_parse
-import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findAndHookMethod
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.sdk.platformtools.Methods.XmlParser_parse
 import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XposedBridge.hookMethod
 
 object XmlParser : EventCenter() {
 
@@ -22,7 +21,7 @@ object XmlParser : EventCenter() {
     }
 
     private val onXmlParseHooker = Hooker {
-        findAndHookMethod(XmlParser, XmlParser_parse, object : XC_MethodHook() {
+        hookMethod(XmlParser_parse, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val xml  = param.args[0] as String
                 val root = param.args[1] as String

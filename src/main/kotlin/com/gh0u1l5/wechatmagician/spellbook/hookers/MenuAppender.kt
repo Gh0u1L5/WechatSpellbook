@@ -10,11 +10,11 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IPopupMenuHook
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.ui.base.Classes.MMListPopupWindow
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.ui.contact.Classes.AddressUI
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.ui.contact.Classes.ContactLongClickListener
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.ui.conversation.Classes.ConversationCreateContextMenuListener
-import com.gh0u1l5.wechatmagician.spellbook.mirror.mm.ui.conversation.Classes.ConversationLongClickListener
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.base.Classes.MMListPopupWindow
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressUI
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.ContactLongClickListener
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes.ConversationCreateContextMenuListener
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes.ConversationLongClickListener
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers.*
 

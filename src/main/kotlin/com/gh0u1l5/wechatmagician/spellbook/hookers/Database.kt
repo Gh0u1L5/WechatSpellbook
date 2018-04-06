@@ -5,10 +5,10 @@ import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IDatabaseHook
-import com.gh0u1l5.wechatmagician.spellbook.mirror.wcdb.Classes.SQLiteErrorHandler
-import com.gh0u1l5.wechatmagician.spellbook.mirror.wcdb.database.Classes.SQLiteCursorFactory
-import com.gh0u1l5.wechatmagician.spellbook.mirror.wcdb.database.Classes.SQLiteDatabase
-import com.gh0u1l5.wechatmagician.spellbook.mirror.wcdb.support.Classes.SQLiteCancellationSignal
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.wcdb.Classes.SQLiteErrorHandler
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.wcdb.database.Classes.SQLiteCursorFactory
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.wcdb.database.Classes.SQLiteDatabase
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.wcdb.support.Classes.SQLiteCancellationSignal
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 
