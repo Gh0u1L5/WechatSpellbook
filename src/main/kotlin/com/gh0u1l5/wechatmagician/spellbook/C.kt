@@ -2,7 +2,9 @@
 
 package com.gh0u1l5.wechatmagician.spellbook
 
-// C.[class] is a shortcut for [class]::class.java
+/**
+ * C.<class name> is a shortcut for <class name>::class.java
+ */
 object C {
     val Boolean = Boolean::class.java
     val File = java.io.File::class.java

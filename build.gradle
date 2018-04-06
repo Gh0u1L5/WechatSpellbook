@@ -1,8 +1,8 @@
 // 重复添加同样的依赖，以保证Spellbook能够独立编译
 buildscript {
     ext {
-        android_gradle_version = '3.2.0-alpha07'
-        dokka_version = '0.9.13'
+        android_gradle_version = '3.1.0'
+        dokka_version = '0.9.15'
         kotlin_version = '1.2.31'
     }
     repositories {
@@ -11,14 +11,14 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$android_gradle_version"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'org.jetbrains.dokka-android'
 
 android {
     compileSdkVersion 27
@@ -69,8 +69,18 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 
-task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+dokka {
+    externalDocumentationLink {
+        url = new URL("http://api.xposed.info/reference/")
+    }
+}
+
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaAndroidTask) {
     outputFormat = 'javadoc'
     outputDirectory = "$buildDir/dokkaJavadoc"
-    sourceDirs = files('src/main/kotlin')
+    externalDocumentationLink {
+        url = new URL("http://api.xposed.info/reference/")
+    }
 }
+
+apply from: 'maven.gradle'

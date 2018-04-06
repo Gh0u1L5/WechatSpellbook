@@ -10,6 +10,10 @@ object BasicUtil {
         }
     }
 
+    fun <T: Any>trySilently(func: () -> T?): T? {
+        return try { func() } catch (t: Throwable) { null }
+    }
+
     fun tryAsynchronously(func: () -> Unit): Thread {
         return thread(start = true) { func() }.apply {
             setUncaughtExceptionHandler { _, t -> XposedBridge.log(t) }

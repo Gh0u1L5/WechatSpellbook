@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
+import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.trySilently
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
 
 object XposedUtil {
@@ -22,7 +23,7 @@ object XposedUtil {
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> tryVerbosely { hook() }
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> tryAsynchronously { hook() }
-            else -> tryAsynchronously { try { hook() } catch (t: Throwable) { /* Ignore */ } }
+            else -> tryAsynchronously { trySilently { hook() } }
         }
     }
 
