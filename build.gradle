@@ -48,6 +48,9 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 repositories {
@@ -65,7 +68,7 @@ dependencies {
     compileOnly 'de.robv.android.xposed:api:53'
     compileOnly 'de.robv.android.xposed:api:53:sources'
 
-    implementation 'net.dongliu:apk-parser:2.4.2'
+    implementation 'net.dongliu:apk-parser:2.5.3'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 
