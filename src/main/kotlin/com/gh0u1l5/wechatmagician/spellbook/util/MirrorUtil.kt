@@ -4,17 +4,17 @@ import net.dongliu.apk.parser.ApkFile
 
 object MirrorUtil {
     fun findAllMirrorObjects(apkPath: String): List<String> {
-        var apkFile: ApkFile? = null
-        return try {
-            apkFile = ApkFile(apkPath)
-            apkFile.dexClasses.map { dexClass ->
-                ReflectionUtil.getClassName(dexClass)
-            }.filter { className ->
-                !className.last().isDigit() && // exclude anonymous classes
-                className.startsWith("com.gh0u1l5.wechatmagician.spellbook.mirror")
+        try {
+            ApkFile(apkPath).use {
+                return it.dexClasses.map { dexClass ->
+                    ReflectionUtil.getClassName(dexClass)
+                }.filter { className ->
+                    !className.last().isDigit() && // exclude anonymous classes
+                            className.startsWith("com.gh0u1l5.wechatmagician.spellbook.mirror")
+                }
             }
-        } finally {
-            apkFile?.close()
+        } catch (t: Throwable) {
+            return listOf()
         }
     }
 

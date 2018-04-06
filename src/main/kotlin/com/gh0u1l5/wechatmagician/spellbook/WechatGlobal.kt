@@ -80,21 +80,20 @@ object WechatGlobal {
                 return@tryAsynchronously
             }
 
-            var apkFile: ApkFile? = null
             try {
                 wxVersion = getApplicationVersion(lpparam.packageName)
                 wxPackageName = lpparam.packageName
                 wxLoader = lpparam.classLoader
 
-                apkFile = ApkFile(lpparam.appInfo.sourceDir)
-                wxClasses = apkFile.dexClasses.map { clazz ->
-                    ReflectionUtil.getClassName(clazz)
+                ApkFile(lpparam.appInfo.sourceDir).use {
+                    wxClasses = it.dexClasses.map { clazz ->
+                        ReflectionUtil.getClassName(clazz)
+                    }
                 }
             } catch (t: Throwable) {
                 // Ignore this one
             } finally {
                 initializeChannel.done()
-                apkFile?.close()
             }
         }
     }
