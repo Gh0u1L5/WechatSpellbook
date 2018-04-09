@@ -98,7 +98,7 @@ def generateMirrorList(String type, String filename) {
     }.collect { file ->
         def relativePath = file.absolutePath.drop(prefixLength)
         relativePath.replaceAll('[\\\\/]', '.').substring(0, relativePath.length() - 3)
-    }
+    }.sort()
     file("$MIRROR_DIR/${filename}.kt").text = """package com.gh0u1l5.wechatmagician.spellbook.mirror
 
 /**

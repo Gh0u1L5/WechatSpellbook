@@ -5,8 +5,8 @@ package com.gh0u1l5.wechatmagician.spellbook.mirror
  */
 val MirrorMethods = listOf (
         com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mars.xlog.Methods,
-        com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.booter.notification.queue.Methods,
         com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.Methods,
+        com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.booter.notification.queue.Methods,
         com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.modelsfs.Methods,
         com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.base.stub.Methods,
         com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.sdk.platformtools.Methods,
