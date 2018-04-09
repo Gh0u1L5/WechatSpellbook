@@ -7,6 +7,6 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExist
 
 object Classes {
     val RemittanceAdapter: Class<*> by wxLazy("RemittanceAdapter") {
-        findClassIfExists("$wxPackageName.plugin.remittance.ui.RemittanceAdapterUI", wxLoader)
+        findClassIfExists("$wxPackageName.plugin.remittance.ui.RemittanceAdapterUI", wxLoader!!)
     }
 }

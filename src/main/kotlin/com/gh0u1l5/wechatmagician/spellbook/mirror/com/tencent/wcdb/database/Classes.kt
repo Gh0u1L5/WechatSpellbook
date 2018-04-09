@@ -7,9 +7,9 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExist
 
 object Classes {
     val SQLiteDatabase: Class<*> by wxLazy("SQLiteDatabase") {
-        findClassIfExists("$WECHAT_PACKAGE_SQLITE.database.SQLiteDatabase", wxLoader)
+        findClassIfExists("$WECHAT_PACKAGE_SQLITE.database.SQLiteDatabase", wxLoader!!)
     }
     val SQLiteCursorFactory: Class<*> by wxLazy("SQLiteCursorFactory") {
-        findClassIfExists("$WECHAT_PACKAGE_SQLITE.database.SQLiteDatabase.CursorFactory", wxLoader)
+        findClassIfExists("$WECHAT_PACKAGE_SQLITE.database.SQLiteDatabase\$CursorFactory", wxLoader!!)
     }
 }

@@ -28,6 +28,6 @@ object Classes {
     }
 
     val SnsUserUI: Class<*> by wxLazy("SnsUserUI") {
-        findClassIfExists("$wxPackageName.plugin.sns.ui.SnsUserUI", wxLoader)
+        findClassIfExists("$wxPackageName.plugin.sns.ui.SnsUserUI", wxLoader!!)
     }
 }

@@ -10,6 +10,6 @@ object Classes {
      * 当用户需要从手机相册中选择照片时启动的Activity
      */
     val AlbumPreviewUI: Class<*> by wxLazy("AlbumPreviewUI") {
-        findClassIfExists("$wxPackageName.plugin.gallery.ui.AlbumPreviewUI", wxLoader)
+        findClassIfExists("$wxPackageName.plugin.gallery.ui.AlbumPreviewUI", wxLoader!!)
     }
 }

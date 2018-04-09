@@ -10,7 +10,7 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromP
 
 object Classes {
     val AddressUI: Class<*> by wxLazy("AddressUI") {
-        findClassIfExists("$wxPackageName.ui.contact.AddressUI.a", wxLoader)
+        findClassIfExists("$wxPackageName.ui.contact.AddressUI\$a", wxLoader!!)
     }
 
     val AddressAdapter: Class<*> by wxLazy("AddressAdapter") {
@@ -27,6 +27,6 @@ object Classes {
     }
 
     val SelectContactUI: Class<*> by wxLazy("SelectContactUI") {
-        findClassIfExists("$wxPackageName.ui.contact.SelectContactUI", wxLoader)
+        findClassIfExists("$wxPackageName.ui.contact.SelectContactUI", wxLoader!!)
     }
 }

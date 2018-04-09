@@ -7,6 +7,6 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExist
 
 object Classes {
     val ExtDeviceWXLoginUI: Class<*> by wxLazy("ExtDeviceWXLoginUI") {
-        findClassIfExists("$wxPackageName.plugin.webwx.ui.ExtDeviceWXLoginUI", wxLoader)
+        findClassIfExists("$wxPackageName.plugin.webwx.ui.ExtDeviceWXLoginUI", wxLoader!!)
     }
 }

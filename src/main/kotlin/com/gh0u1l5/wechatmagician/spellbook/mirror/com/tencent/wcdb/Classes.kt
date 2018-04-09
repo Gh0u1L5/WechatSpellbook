@@ -7,6 +7,6 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExist
 
 object Classes {
     val SQLiteErrorHandler: Class<*> by wxLazy("SQLiteErrorHandler") {
-        findClassIfExists("$WECHAT_PACKAGE_SQLITE.DatabaseErrorHandler", wxLoader)
+        findClassIfExists("$WECHAT_PACKAGE_SQLITE.DatabaseErrorHandler", wxLoader!!)
     }
 }

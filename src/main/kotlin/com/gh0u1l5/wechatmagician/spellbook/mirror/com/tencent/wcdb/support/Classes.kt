@@ -7,6 +7,6 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExist
 
 object Classes {
     val SQLiteCancellationSignal: Class<*> by wxLazy("SQLiteCancellationSignal") {
-        findClassIfExists("$WECHAT_PACKAGE_SQLITE.support.CancellationSignal", wxLoader)
+        findClassIfExists("$WECHAT_PACKAGE_SQLITE.support.CancellationSignal", wxLoader!!)
     }
 }

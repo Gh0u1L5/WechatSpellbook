@@ -7,6 +7,6 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExist
 
 object Classes {
     val SelectConversationUI: Class<*> by wxLazy("SelectConversationUI") {
-        findClassIfExists("$wxPackageName.ui.transmit.SelectConversationUI", wxLoader)
+        findClassIfExists("$wxPackageName.ui.transmit.SelectConversationUI", wxLoader!!)
     }
 }

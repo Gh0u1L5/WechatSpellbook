@@ -10,15 +10,15 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromP
 
 object Classes {
     val LauncherUI: Class<*> by wxLazy("LauncherUI") {
-        findClassIfExists("$wxPackageName.ui.LauncherUI", wxLoader)
+        findClassIfExists("$wxPackageName.ui.LauncherUI", wxLoader!!)
     }
 
     val MMActivity: Class<*> by wxLazy("MMActivity") {
-        findClassIfExists("$wxPackageName.ui.MMActivity", wxLoader)
+        findClassIfExists("$wxPackageName.ui.MMActivity", wxLoader!!)
     }
 
     val MMFragmentActivity: Class<*> by wxLazy("MMFragmentActivity") {
-        findClassIfExists("$wxPackageName.ui.MMFragmentActivity", wxLoader)
+        findClassIfExists("$wxPackageName.ui.MMFragmentActivity", wxLoader!!)
     }
 
     val MMBaseAdapter: Class<*> by wxLazy("MMBaseAdapter") {

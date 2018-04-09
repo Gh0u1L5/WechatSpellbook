@@ -22,6 +22,6 @@ object Classes {
     }
 
     val NotificationItem: Class<*> by wxLazy("NotificationItem") {
-        findClassIfExists("$wxPackageName.booter.notification.NotificationItem", wxLoader)
+        findClassIfExists("$wxPackageName.booter.notification.NotificationItem", wxLoader!!)
     }
 }

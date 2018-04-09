@@ -1,79 +1,40 @@
 package com.gh0u1l5.wechatmagician.spellbook
 
+import android.content.Context
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
-import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
+import android.util.Log
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
-import com.gh0u1l5.wechatmagician.spellbook.base.ApkSnapshot
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorClasses
-import com.gh0u1l5.wechatmagician.spellbook.util.FileUtil
+import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorFields
+import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorMethods
 import com.gh0u1l5.wechatmagician.spellbook.util.MirrorUtil.generateReportWithForceEval
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil
 import dalvik.system.PathClassLoader
 import net.dongliu.apk.parser.ApkFile
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class MirrorUnitTest {
-//    class FakeClassLoader: ClassLoader() {
-//        object FakeClass
-//
-//        override fun findClass(name: String?): Class<*> {
-//            return FakeClass::class.java
-//        }
-//
-//        override fun loadClass(name: String?): Class<*>? {
-//            return loadClass(name, false)
-//        }
-//
-//        override fun loadClass(name: String?, resolve: Boolean): Class<*>? {
-//            return FakeClass::class.java
-//        }
-//    }
-//
-//    private fun convertPackagesToSnapshots(apkDir: String) {
-//        val apkPaths = File(apkDir).list { _, name -> name.endsWith(".apk") } ?: arrayOf()
-//        for (apkPath in apkPaths.map { "$apkDir/$it" }) {
-//            val snapshot = ApkSnapshot.convertPackageToSnapshot(apkPath)
-//            val snapshotPath = apkPath.removeSuffix(".apk") + ".snapshot"
-//            FileUtil.writeObjectToDisk(snapshotPath, snapshot)
-//        }
-//    }
-//
-//    @Test fun convertDomesticPackagesToSnapshots() {
-//        convertPackagesToSnapshots("./wechat/domestic/")
-//    }
-//
-//    @Test fun convertPlayStorePackagesToSnapshots() {
-//        convertPackagesToSnapshots("./wechat/play-store/")
-//    }
-//
-//    private fun verifySnapshot(snapshot: ApkSnapshot): Boolean {
-//        WechatGlobal.wxUnitTestMode = true
-//        WechatGlobal.wxVersion = Version(snapshot.versionName)
-//        WechatGlobal.wxPackageName = snapshot.packageName
-//        WechatGlobal.wxLoader = FakeClassLoader()
-//        WechatGlobal.wxClasses = snapshot.classes.values.toTypedArray()
-//
-//        generateReportWithForceEval(MirrorClasses).forEach {
-//            println(it.second)
-//        }
-//
-//        return true
-//    }
-//
-//    private fun verifySnapshots(snapshotDir: String) {
-//        val snapshotPaths = File(snapshotDir).list { _, name -> name.endsWith(".snapshot") } ?: arrayOf()
-//        for (snapshotPath in snapshotPaths.map { snapshotDir + it }) {
-//            val snapshot = FileUtil.readObjectFromDisk(snapshotPath)
-//            assertTrue(verifySnapshot(snapshot as ApkSnapshot))
-//        }
-//    }
+    companion object {
+        private const val DOMESTIC_DIR = "wechat/domestic/"
+        private const val PLAY_STORE_DIR = "wechat/play-store/"
+    }
 
-    private fun verifyApk(apkPath: String): Boolean {
+    private var context: Context? = null
+
+    @Before fun initialize() {
+        context = InstrumentationRegistry.getContext()
+    }
+
+    private fun verifyPackage(apkPath: String): Boolean {
+        if (!File(apkPath).exists()) {
+            return true // ignore if the apk isn't accessible
+        }
         ApkFile(apkPath).use {
             WechatGlobal.wxVersion = Version(it.apkMeta.versionName)
             WechatGlobal.wxPackageName = it.apkMeta.packageName
@@ -83,27 +44,116 @@ class MirrorUnitTest {
             }
 
             generateReportWithForceEval(MirrorClasses).forEach {
-                println(it.second)
+                Log.d("MirrorUnitTest", "Verified ${it.first} -> ${it.second}")
+            }
+            generateReportWithForceEval(MirrorMethods).forEach {
+                Log.d("MirrorUnitTest", "Verified ${it.first} -> ${it.second}")
+            }
+            generateReportWithForceEval(MirrorFields).forEach {
+                Log.d("MirrorUnitTest", "Verified ${it.first} -> ${it.second}")
             }
 
             return true
         }
     }
 
-    private fun verifyApks(apkDir: String) {
-        val apkPaths = File(apkDir).list { _, name -> name.endsWith(".apk") } ?: arrayOf()
-        for (apkPath in apkPaths.map { "$apkDir/$it" }) {
-            assertTrue(verifyApk(apkPath))
-        }
+    @Test fun verifyDomesticPackage6_5_3() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.3.apk"))
     }
 
-    @Test fun testDomesticApkSnapshots() {
-        val appContext = InstrumentationRegistry.getContext()
-        verifyApks("${appContext.filesDir}/wechat/domestic/")
+    @Test fun verifyDomesticPackage6_5_4() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.4.apk"))
     }
 
-    @Test fun testPlayStoreApkSnapshots() {
-        val appContext = InstrumentationRegistry.getContext()
-        verifyApks("${appContext.filesDir}/wechat/play-store/")
+    @Test fun verifyDomesticPackage6_5_7() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.7.apk"))
+    }
+
+    @Test fun verifyDomesticPackage6_5_8() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.8.apk"))
+    }
+
+    @Test fun verifyDomesticPackage6_5_10() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.10.apk"))
+    }
+
+    @Test fun verifyDomesticPackage6_5_13() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.13.apk"))
+    }
+
+    @Test fun verifyDomesticPackage6_5_16() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.16.apk"))
+    }
+
+    @Test fun verifyDomesticPackage6_5_19() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.19.apk"))
+    }
+
+    @Test fun verifyDomesticPackage6_5_22() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.22.apk"))
+    }
+
+    @Test fun verifyDomesticPackage6_5_23() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.23.apk"))
+    }
+
+    @Test fun verifyDomesticPackage6_6_0() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.6.0.apk"))
+    }
+
+    @Test fun verifyDomesticPackage6_6_1() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.6.1.apk"))
+    }
+
+    @Test fun verifyDomesticPackage6_6_2() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.6.2.apk"))
+    }
+
+    @Test fun verifyDomesticPackage6_6_3() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.6.3.apk"))
+    }
+
+    @Test fun verifyDomesticPackage6_6_5() {
+        val appDir = "${context!!.filesDir}/$DOMESTIC_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.6.5.apk"))
+    }
+
+    @Test fun verifyPlayStorePackage6_5_8() {
+        val appDir = "${context!!.filesDir}/$PLAY_STORE_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.8.apk"))
+    }
+
+    @Test fun verifyPlayStorePackage6_5_10() {
+        val appDir = "${context!!.filesDir}/$PLAY_STORE_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.10.apk"))
+    }
+
+    @Test fun verifyPlayStorePackage6_5_23() {
+        val appDir = "${context!!.filesDir}/$PLAY_STORE_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.5.23.apk"))
+    }
+
+    @Test fun verifyPlayStorePackage6_6_1() {
+        val appDir = "${context!!.filesDir}/$PLAY_STORE_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.6.1.apk"))
+    }
+
+    @Test fun verifyPlayStorePackage6_6_2() {
+        val appDir = "${context!!.filesDir}/$PLAY_STORE_DIR"
+        assertTrue(verifyPackage("$appDir/wechat-v6.6.2.apk"))
     }
 }

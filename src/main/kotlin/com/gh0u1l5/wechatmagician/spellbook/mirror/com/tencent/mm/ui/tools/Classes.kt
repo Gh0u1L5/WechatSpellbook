@@ -7,6 +7,6 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExist
 
 object Classes {
     val ActionBarEditText: Class<*> by wxLazy("ActionBarEditText") {
-        findClassIfExists("$wxPackageName.ui.tools.ActionBarSearchView.ActionBarEditText", wxLoader)
+        findClassIfExists("$wxPackageName.ui.tools.ActionBarSearchView\$ActionBarEditText", wxLoader!!)
     }
 }

@@ -7,6 +7,6 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExist
 
 object Classes {
     val MMListPopupWindow: Class<*> by wxLazy("MMListPopupWindow") {
-        findClassIfExists("$wxPackageName.ui.base.MMListPopupWindow", wxLoader)
+        findClassIfExists("$wxPackageName.ui.base.MMListPopupWindow", wxLoader!!)
     }
 }

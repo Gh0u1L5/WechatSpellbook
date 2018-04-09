@@ -6,6 +6,6 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExist
 
 object Classes {
     val Xlog: Class<*> by wxLazy("Xlog") {
-        findClassIfExists("com.tencent.mars.xlog.Xlog", wxLoader)
+        findClassIfExists("com.tencent.mars.xlog.Xlog", wxLoader!!)
     }
 }
