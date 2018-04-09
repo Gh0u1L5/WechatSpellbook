@@ -40,7 +40,7 @@ class MirrorUnitTest {
             WechatGlobal.wxPackageName = it.apkMeta.packageName
             WechatGlobal.wxLoader = PathClassLoader(apkPath, ClassLoader.getSystemClassLoader())
             WechatGlobal.wxClasses = it.dexClasses.map { clazz ->
-                ReflectionUtil.getClassName(clazz)
+                ReflectionUtil.ClassName(clazz.classType)
             }
 
             generateReportWithForceEval(MirrorClasses).forEach {

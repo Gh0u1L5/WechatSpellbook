@@ -12,6 +12,12 @@ import java.util.concurrent.ConcurrentHashMap
 // ReflectionUtil is a helper object for static analysis
 object ReflectionUtil {
 
+    class ClassName(classType: String) { /* classType example: Ljava/lang/String; */
+        val sections = classType.substring(1, classType.length - 1).split('/')
+        val size = sections.size
+        val className = sections.joinToString(".")
+    }
+
     class Classes(private val classes: List<Class<*>>) {
         fun filterBySuper(superClass: Class<*>?): Classes {
             return Classes(classes.filter { it.superclass == superClass })
@@ -86,30 +92,31 @@ object ReflectionUtil {
         return null
     }
 
-    // getClassName parses the standard class name of the given DexClass.
-    @JvmStatic fun getClassName(clazz: DexClass): String {
-        return clazz.classType
-                .replace('/', '.') // replace delimiters
-                .drop(1) // drop leading 'L'
-                .dropLast(1) //drop trailing ';'
-    }
-
     // findClassesFromPackage returns a list of all the classes contained in the given package.
-    @JvmStatic fun findClassesFromPackage(loader: ClassLoader, classes: List<String>, packageName: String, depth: Int = 0): Classes {
+    @JvmStatic fun findClassesFromPackage(loader: ClassLoader, classes: List<ClassName>, packageName: String, depth: Int = 0): Classes {
         if ((packageName to depth) in classCache) {
             return classCache[packageName to depth]!!
         }
 
+        val sections = packageName.split(".")
         val result = Classes(classes.filter { clazz ->
-            val currentPackage = clazz.substringBeforeLast(".")
-            if (depth == 0) {
-                return@filter currentPackage == packageName
+            val currentSections = clazz.sections.dropLast(1)
+            // Check depth
+            if (currentSections.size < sections.size) {
+                return@filter false
             }
-            val satisfyPrefix = currentPackage.startsWith(packageName)
-            val currentDepth = currentPackage.drop(packageName.length).count { it == '.' }
-            val satisfyDepth = depth == -1 || depth == currentDepth
-            return@filter satisfyPrefix && satisfyDepth
-        }.mapNotNull { findClassIfExists(it, loader) })
+            val currentDepth = currentSections.size - sections.size
+            if (depth != -1 && depth != currentDepth) {
+                return@filter false
+            }
+            // Check prefix
+            for (i in sections.indices) {
+                if (currentSections[i] != sections[i]) {
+                    return@filter false
+                }
+            }
+            return@filter true
+        }.mapNotNull { findClassIfExists(it.className, loader) })
 
         classCache[packageName to depth] = result
         return result

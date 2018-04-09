@@ -37,7 +37,7 @@ object WechatGlobal {
     /**
      * A list holding a cache of full names for classes provided by the Wechat APK.
      */
-    @Volatile var wxClasses: List<String>? = null
+    @Volatile var wxClasses: List<ReflectionUtil.ClassName>? = null
 
     /**
      * A flag indicating whether the codes are running under unit test mode.
@@ -87,7 +87,7 @@ object WechatGlobal {
 
                 ApkFile(lpparam.appInfo.sourceDir).use {
                     wxClasses = it.dexClasses.map { clazz ->
-                        ReflectionUtil.getClassName(clazz)
+                        ReflectionUtil.ClassName(clazz.classType)
                     }
                 }
             } catch (t: Throwable) {
