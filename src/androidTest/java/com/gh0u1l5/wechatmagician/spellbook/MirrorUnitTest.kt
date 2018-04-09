@@ -36,6 +36,7 @@ class MirrorUnitTest {
             return true // ignore if the apk isn't accessible
         }
         ApkFile(apkPath).use {
+            WechatGlobal.wxUnitTestMode = true
             WechatGlobal.wxVersion = Version(it.apkMeta.versionName)
             WechatGlobal.wxPackageName = it.apkMeta.packageName
             WechatGlobal.wxLoader = PathClassLoader(apkPath, ClassLoader.getSystemClassLoader())

@@ -17,6 +17,9 @@ android:
     - tools
     - platform-tools
     - tools
+    # The SDK version used for unit tests
+    - android-22
+    - android-24
     # The BuildTools version used by your project
     - build-tools-${ANDROID_BUILD_TOOLS_VERSION}
     # The SDK version used to compile your project
@@ -32,6 +35,6 @@ before_install:
 before_script:
   - android-update-sdk --components=sys-img-$ABI-$API --accept-licenses='android-sdk-license-[0-9a-f]{8}'
   - echo no | android create avd --force -n test -t $API --abi $ABI
-  - emulator -avd test -no-audio -no-window
+  - QEMU_AUDIO_DRV=none emulator -avd test -no-window
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
