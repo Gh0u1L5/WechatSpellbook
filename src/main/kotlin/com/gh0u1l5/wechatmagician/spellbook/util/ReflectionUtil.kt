@@ -4,7 +4,6 @@ import android.util.Log
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge.hookMethod
-import net.dongliu.apk.parser.bean.DexClass
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
@@ -65,8 +64,16 @@ object ReflectionUtil {
     // classCache stores the result of findClassesFromPackage to speed up next search.
     private val classCache: MutableMap<Pair<String, Int>, Classes> = ConcurrentHashMap()
 
+    @JvmStatic fun clearClassCache() {
+        classCache.clear()
+    }
+
     // methodCache stores the result of findFieldExact to speed up next search.
     private val methodCache: MutableMap<String, Method?> = ConcurrentHashMap()
+
+    @JvmStatic fun clearMethodCache() {
+        methodCache.clear()
+    }
 
     // shadowCopy copy all the fields of the object obj into the object copy.
     @JvmStatic fun shadowCopy(obj: Any, copy: Any, clazz: Class<*>? = obj::class.java) {

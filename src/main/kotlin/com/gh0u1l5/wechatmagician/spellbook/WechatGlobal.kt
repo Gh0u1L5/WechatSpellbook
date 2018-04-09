@@ -61,11 +61,32 @@ object WechatGlobal {
      * @param initializer the callback that actually initialize the lazy object.
      * @return a lazy object that can be used for lazy evaluation.
      */
-    fun <T> wxLazy(name: String, initializer: () -> T?): Lazy<T> = lazy {
-        if (!wxUnitTestMode) {
-            initializeChannel.wait(4000)
+    fun <T> wxLazy(name: String, initializer: () -> T?): Lazy<T> {
+        return if (wxUnitTestMode) {
+            UnitTestLazyImpl {
+                initializer() ?: throw Error("Failed to evaluate $name")
+            }
+        } else {
+            lazy {
+                initializeChannel.wait(4000)
+                initializer() ?: throw Error("Failed to evaluate $name")
+            }
         }
-        initializer() ?: throw Error("Failed to evaluate $name")
+    }
+
+    class UnitTestLazyImpl<out T>(private val initializer: () -> T): Lazy<T>, java.io.Serializable {
+        @Volatile private var lazyValue: Lazy<T> = lazy(initializer)
+
+        fun refresh() {
+            lazyValue = lazy(initializer)
+        }
+
+        override val value: T
+            get() = lazyValue.value
+
+        override fun toString(): String = lazyValue.toString()
+
+        override fun isInitialized(): Boolean = lazyValue.isInitialized()
     }
 
     /**

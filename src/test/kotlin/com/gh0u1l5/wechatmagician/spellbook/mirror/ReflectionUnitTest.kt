@@ -1,5 +1,7 @@
 package com.gh0u1l5.wechatmagician.spellbook.mirror
 
+import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
+import com.gh0u1l5.wechatmagician.spellbook.util.MirrorUtil.clearUnitTestLazyFields
 import com.gh0u1l5.wechatmagician.spellbook.util.MirrorUtil.collectFields
 import com.gh0u1l5.wechatmagician.spellbook.util.MirrorUtil.generateReport
 import com.gh0u1l5.wechatmagician.spellbook.util.MirrorUtil.generateReportWithForceEval
@@ -23,6 +25,11 @@ class ReflectionUnitTest {
     object TestObject2 {
         val var1 by lazy { 1 }
         val var2 by lazy { 2 }
+    }
+
+    object TestObject3 {
+        val var1 by WechatGlobal.UnitTestLazyImpl{ 1 }
+        val var2 by WechatGlobal.UnitTestLazyImpl{ 2 }
     }
 
     @Test fun testCollectFields() {
@@ -64,5 +71,25 @@ class ReflectionUnitTest {
                 else -> throw Exception("Unknown key: ${it.first}")
             }
         }
+    }
+
+    @Test fun testClearUnitTestLazyFields() {
+        assertEquals(1, TestObject3.var1)
+        assertEquals(2, TestObject3.var2)
+
+        clearUnitTestLazyFields(TestObject3)
+
+        val fields = collectFields(TestObject3)
+        assertEquals(2, fields.size)
+        fields.forEach {
+            when (it.first) {
+                "var1" -> assertEquals(lazy { 1 }.toString(), it.second.toString())
+                "var2" -> assertEquals(lazy { 2 }.toString(), it.second.toString())
+                else -> throw Exception("Unknown key: ${it.first}")
+            }
+        }
+
+        assertEquals(1, TestObject3.var1)
+        assertEquals(2, TestObject3.var2)
     }
 }

@@ -3,11 +3,11 @@ package com.gh0u1l5.wechatmagician.spellbook
 import android.content.Context
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
-import android.util.Log
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorClasses
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorFields
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorMethods
+import com.gh0u1l5.wechatmagician.spellbook.util.MirrorUtil.clearUnitTestLazyFields
 import com.gh0u1l5.wechatmagician.spellbook.util.MirrorUtil.generateReportWithForceEval
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil
 import dalvik.system.PathClassLoader
@@ -44,15 +44,13 @@ class MirrorUnitTest {
                 ReflectionUtil.ClassName(clazz.classType)
             }
 
-            generateReportWithForceEval(MirrorClasses).forEach {
-                Log.d("MirrorUnitTest", "Verified ${it.first} -> ${it.second}")
+            val objects = MirrorClasses + MirrorMethods + MirrorFields
+            ReflectionUtil.clearClassCache()
+            ReflectionUtil.clearMethodCache()
+            objects.forEach { instance ->
+                clearUnitTestLazyFields(instance)
             }
-            generateReportWithForceEval(MirrorMethods).forEach {
-                Log.d("MirrorUnitTest", "Verified ${it.first} -> ${it.second}")
-            }
-            generateReportWithForceEval(MirrorFields).forEach {
-                Log.d("MirrorUnitTest", "Verified ${it.first} -> ${it.second}")
-            }
+            generateReportWithForceEval(objects)
 
             return true
         }

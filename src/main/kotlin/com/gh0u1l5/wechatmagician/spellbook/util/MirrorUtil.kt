@@ -1,5 +1,7 @@
 package com.gh0u1l5.wechatmagician.spellbook.util
 
+import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
+
 object MirrorUtil {
     fun collectFields(instance: Any): List<Pair<String, Any>> {
         return instance::class.java.declaredFields.filter { field ->
@@ -32,5 +34,17 @@ object MirrorUtil {
                 "${instance::class.java.canonicalName}.${it.first}" to it.second.toString()
             }
         }.flatten().sortedBy { it.first }
+    }
+
+    @JvmStatic fun clearUnitTestLazyFields(instance: Any) {
+        instance::class.java.declaredFields.forEach { field ->
+            if (Lazy::class.java.isAssignableFrom(field.type)) {
+                field.isAccessible = true
+                val lazyObject = field.get(instance)
+                if (lazyObject is WechatGlobal.UnitTestLazyImpl<*>) {
+                    lazyObject.refresh()
+                }
+            }
+        }
     }
 }
