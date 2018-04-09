@@ -10,12 +10,8 @@ import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
-    private val classesInCurrentPackage by wxLazy("$wxPackageName.storage") {
-        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.storage")
-    }
-
     val MsgInfo: Class<*> by wxLazy("MsgInfo") {
-        classesInCurrentPackage
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.storage")
                 .filterByMethod(C.Boolean, "isSystem")
                 .firstOrNull()
     }
@@ -23,18 +19,18 @@ object Classes {
     val MsgInfoStorage: Class<*> by wxLazy("MsgInfoStorage") {
         when {
             wxVersion!! >= Version("6.5.8") ->
-                classesInCurrentPackage
+                findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.storage")
                         .filterByMethod(C.Long, MsgInfo, C.Boolean)
                         .firstOrNull()
             else ->
-                classesInCurrentPackage
+                findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.storage")
                         .filterByMethod(C.Long, MsgInfo)
                         .firstOrNull()
         }
     }
 
     val ContactInfo: Class<*> by wxLazy("ContactInfo") {
-        classesInCurrentPackage
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.storage")
                 .filterByMethod(C.String, "getCityCode")
                 .filterByMethod(C.String, "getCountryCode")
                 .firstOrNull()

@@ -9,18 +9,14 @@ import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.sdk.platformto
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
-    private val classesInDepthOne by wxLazy("$wxPackageName.*") {
-        findClassesFromPackage(wxLoader!!, wxClasses!!, wxPackageName, 1)
-    }
-
     val ImgInfoStorage: Class<*> by wxLazy("ImgInfoStorage") {
-        classesInDepthOne
+        findClassesFromPackage(wxLoader!!, wxClasses!!, wxPackageName, 1)
                 .filterByMethod(C.String, C.String, C.String, C.String, C.Boolean)
                 .firstOrNull()
     }
 
     val LruCacheWithListener: Class<*> by wxLazy("LruCacheWithListener") {
-        classesInDepthOne
+        findClassesFromPackage(wxLoader!!, wxClasses!!, wxPackageName, 1)
                 .filterBySuper(LruCache)
                 .firstOrNull()
     }

@@ -8,24 +8,20 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExist
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
-    private val classesInCurrentPackage by wxLazy("$wxPackageName.plugin.sns.ui") {
-        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
-    }
-
     val SnsActivity: Class<*> by wxLazy("SnsActivity") {
-        classesInCurrentPackage
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
                 .filterByField("$wxPackageName.ui.base.MMPullDownView")
                 .firstOrNull()
     }
 
     val SnsTimeLineUI: Class<*> by wxLazy("SnsTimeLineUI") {
-        classesInCurrentPackage
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
                 .filterByField("android.support.v7.app.ActionBar")
                 .firstOrNull()
     }
 
     val SnsUploadUI: Class<*> by wxLazy("SnsUploadUI") {
-        classesInCurrentPackage
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
                 .filterByField("$wxPackageName.plugin.sns.ui.LocationWidget")
                 .filterByField("$wxPackageName.plugin.sns.ui.SnsUploadSayFooter")
                 .firstOrNull()

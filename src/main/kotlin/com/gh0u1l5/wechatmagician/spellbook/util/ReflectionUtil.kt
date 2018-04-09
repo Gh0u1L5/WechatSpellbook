@@ -8,6 +8,7 @@ import de.robv.android.xposed.XposedHelpers.*
 import net.dongliu.apk.parser.bean.DexClass
 import java.lang.reflect.Field
 import java.lang.reflect.Method
+import java.security.InvalidParameterException
 import java.util.concurrent.ConcurrentHashMap
 
 // ReflectionUtil is a helper object for static analysis
@@ -16,7 +17,7 @@ object ReflectionUtil {
     class Classes(private val classes: List<Class<*>>) {
         fun filterBySuper(superClass: Class<*>?): Classes {
             if (superClass == null) {
-                return Classes(emptyList())
+                throw InvalidParameterException("superClass cannot be null")
             }
             return Classes(classes.filter { it.superclass == superClass })
         }

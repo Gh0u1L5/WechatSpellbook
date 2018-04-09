@@ -9,18 +9,14 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExist
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
-    private val classesInCurrentPackage by wxLazy("$wxPackageName.booter.notification") {
-        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.booter.notification")
-    }
-
     val MMNotification: Class<*> by wxLazy("MMNotification") {
-        classesInCurrentPackage
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.booter.notification")
                 .filterByMethod(null, "notify", C.Int, C.Notification)
                 .firstOrNull()
     }
 
     val MMNotification_MessageHandler: Class<*> by wxLazy("MMNotification_MessageHandler") {
-        classesInCurrentPackage
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.booter.notification")
                 .filterByMethod(null, "handleMessage", C.Message)
                 .firstOrNull()
     }

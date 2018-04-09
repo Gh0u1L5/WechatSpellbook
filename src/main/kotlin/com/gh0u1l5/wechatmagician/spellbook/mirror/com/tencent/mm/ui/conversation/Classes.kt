@@ -10,12 +10,8 @@ import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
-    private val classesInCurrentPackage by wxLazy("$wxPackageName.ui.conversation") {
-        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.conversation")
-    }
-
     val ConversationWithCacheAdapter: Class<*> by wxLazy("ConversationWithCacheAdapter") {
-        classesInCurrentPackage
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.conversation")
                 .filterByMethod(null, "clearCache")
                 .firstOrNull()
     }
@@ -30,12 +26,12 @@ object Classes {
     val ConversationLongClickListener: Class<*> by wxLazy("ConversationLongClickListener") {
         when {
             wxVersion!! >= Version("6.5.8") ->
-                classesInCurrentPackage
+                findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.conversation")
                         .filterByMethod(null, "onCreateContextMenu", C.ContextMenu, C.View, C.ContextMenuInfo)
                         .filterByMethod(C.Boolean, "onItemLongClick", C.AdapterView, C.View, C.Int, C.Long)
                         .firstOrNull()
             else ->
-                classesInCurrentPackage
+                findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.conversation")
                         .filterByEnclosingClass(MainUI)
                         .filterByMethod(C.Boolean, "onItemLongClick", C.AdapterView, C.View, C.Int, C.Long)
                         .firstOrNull()
@@ -43,7 +39,7 @@ object Classes {
     }
 
     val MainUI: Class<*> by wxLazy("MainUI") {
-        classesInCurrentPackage
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.conversation")
                 .filterByMethod(C.Int, "getLayoutId")
                 .filterByMethod(null, "onConfigurationChanged", C.Configuration)
                 .firstOrNull()

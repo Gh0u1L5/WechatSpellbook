@@ -9,22 +9,18 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExist
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
-    private val classesInCurrentPackage by wxLazy("$wxPackageName.ui.contact") {
-        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.contact")
-    }
-
     val AddressUI: Class<*> by wxLazy("AddressUI") {
         findClassIfExists("$wxPackageName.ui.contact.AddressUI.a", wxLoader)
     }
 
     val AddressAdapter: Class<*> by wxLazy("AddressAdapter") {
-        classesInCurrentPackage
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.contact")
                 .filterByMethod(null, "pause")
                 .firstOrNull()
     }
 
     val ContactLongClickListener: Class<*> by wxLazy("ContactLongClickListener") {
-        classesInCurrentPackage
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.contact")
                 .filterByEnclosingClass(AddressUI)
                 .filterByMethod(C.Boolean, "onItemLongClick", C.AdapterView, C.View, C.Int, C.Long)
                 .firstOrNull()
