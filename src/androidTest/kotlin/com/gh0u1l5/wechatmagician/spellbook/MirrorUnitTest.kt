@@ -3,6 +3,7 @@ package com.gh0u1l5.wechatmagician.spellbook
 import android.content.Context
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
+import android.util.Log
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorClasses
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorFields
@@ -50,7 +51,9 @@ class MirrorUnitTest {
             objects.forEach { instance ->
                 clearUnitTestLazyFields(instance)
             }
-            generateReportWithForceEval(objects)
+            generateReportWithForceEval(objects).forEach {
+                Log.d("MirrorUnitTest", "Verified ${it.first} -> ${it.second}")
+            }
 
             return true
         }
