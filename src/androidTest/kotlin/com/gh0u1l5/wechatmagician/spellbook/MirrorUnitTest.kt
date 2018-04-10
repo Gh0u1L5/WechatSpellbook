@@ -35,9 +35,9 @@ class MirrorUnitTest {
     }
 
     private fun verifyPackage(apkPath: String) {
-        val filesDir = context!!.filesDir
+        val cacheDir = context!!.cacheDir
 
-        val apkFile = File(filesDir, apkPath)
+        val apkFile = File(cacheDir, apkPath)
         if (!apkFile.exists()) {
             try {
                 javaClass.classLoader.getResourceAsStream(apkPath).use {
