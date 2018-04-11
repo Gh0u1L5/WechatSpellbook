@@ -69,6 +69,8 @@ class MirrorUnitTest {
                 Log.d("MirrorUnitTest", "Verified ${it.first} -> ${it.second}")
             }
         }
+
+        apkFile.delete()
     }
 
     @Test fun verifyDomesticPackage6_5_3() {
