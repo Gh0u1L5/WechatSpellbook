@@ -3,12 +3,13 @@ jdk: oraclejdk8
 
 env:
   global:
+    - ADB_INSTALL_TIMEOUT=10 # minutes (2 minutes by default)
     - GRADLE_VERSION=4.4
     - BUILD_API=android-27
     - BUILD_TOOLS=build-tools-27.0.3
   matrix:
     - EMULATOR_API=android-19 EMULATOR_ABI=armeabi-v7a
-    - EMULATOR_API=android-25 EMULATOR_ABI=armeabi-v7a
+    - EMULATOR_API=android-21 EMULATOR_ABI=armeabi-v7a
 
 android:
   components:
@@ -30,7 +31,6 @@ cache:
     - $HOME/.android/build-cache
 
 before_install:
-  - cat $(which android-wait-for-emulator)
   # Setup the correct gradle version.
   - wget http://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
   - unzip gradle-${GRADLE_VERSION}-bin.zip
@@ -44,7 +44,13 @@ before_script:
   - echo y | sdkmanager "system-images;${EMULATOR_API};google_apis;${EMULATOR_ABI}"
   # Create and start emulator for the script. Meant to race the install task.
   - echo no | avdmanager create avd --force -n test -k "system-images;${EMULATOR_API};google_apis;${EMULATOR_ABI}"
-  - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -no-snapshot &
+  - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-snapshot -no-window -screen no-touch &
   # Wait for the emulator to boot.
   - android-wait-for-emulator
+  - adb shell settings put global window_animation_scale 0 &
+  - adb shell settings put global transition_animation_scale 0 &
+  - adb shell settings put global animator_duration_scale 0 &
   - adb shell input keyevent 82 &
+
+script:
+  - travis_wait 40 gradle build connectedCheck

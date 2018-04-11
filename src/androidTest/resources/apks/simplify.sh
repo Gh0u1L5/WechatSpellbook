@@ -11,7 +11,7 @@ for file in */*.apk; do
         unzip "$file" -d "$tempdir"
         cd "$tempdir"
           rm -rf META-INF assets lib r resources.arsc
-          zip "${basename}.apk" * && mv "${basename}.apk" ../
+          zip -9 "${basename}.apk" * && mv "${basename}.apk" ../
         cd "$workdir"
           rm -rf "$tempdir"
     fi

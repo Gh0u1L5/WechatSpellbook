@@ -1,7 +1,6 @@
 // 重复添加同样的依赖，以保证Spellbook能够独立编译
 buildscript {
     ext {
-        android_gradle_version = '3.1.0'
         dokka_version = '0.9.15'
         kotlin_version = '1.2.31'
     }
@@ -10,7 +9,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:$android_gradle_version"
+        classpath 'com.android.tools.build:gradle:3.1.1'
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokka_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -72,7 +71,7 @@ dependencies {
     compileOnly 'de.robv.android.xposed:api:53:sources'
 
     implementation 'net.dongliu:apk-parser:2.5.3'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 }
 
 dokka {
