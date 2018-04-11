@@ -3,6 +3,7 @@ jdk: oraclejdk8
 
 env:
   global:
+    - ADB_INSTALL_TIMEOUT=10 # minutes (2 minutes by default)
     - GRADLE_VERSION=4.4
     - BUILD_API=android-27
     - BUILD_TOOLS=build-tools-27.0.3
@@ -47,3 +48,6 @@ before_script:
   # Wait for the emulator to boot.
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
+
+script:
+  - travis_wait 40 gradle build connectedCheck
