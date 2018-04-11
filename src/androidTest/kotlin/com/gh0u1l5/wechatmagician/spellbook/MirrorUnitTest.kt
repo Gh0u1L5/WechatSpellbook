@@ -38,18 +38,16 @@ class MirrorUnitTest {
         val cacheDir = context!!.cacheDir
 
         val apkFile = File(cacheDir, apkPath)
-        if (!apkFile.exists()) {
-            try {
-                javaClass.classLoader.getResourceAsStream(apkPath).use {
-                    FileUtil.writeBytesToDisk(apkFile.absolutePath, it.readBytes())
-                }
-            } catch (t: Throwable) {
-                Log.w("MirrorUnitTest", t)
-                return // ignore if the apk isn't accessible
+        try {
+            javaClass.classLoader.getResourceAsStream(apkPath).use {
+                FileUtil.writeInputStreamToDisk(apkFile.absolutePath, it)
             }
-            assertTrue(apkFile.exists())
+        } catch (t: Throwable) {
+            Log.w("MirrorUnitTest", t)
+            return // ignore if the apk isn't accessible
         }
 
+        assertTrue(apkFile.exists())
         ApkFile(apkFile).use {
             WechatGlobal.wxUnitTestMode = true
             WechatGlobal.wxVersion = Version(it.apkMeta.versionName)
@@ -131,6 +129,10 @@ class MirrorUnitTest {
 
     @Test fun verifyDomesticPackage6_6_5() {
         verifyPackage("$DOMESTIC_DIR/wechat-v6.6.5.apk")
+    }
+
+    @Test fun verifyDomesticPackage6_6_6() {
+        verifyPackage("$DOMESTIC_DIR/wechat-v6.6.6.apk")
     }
 
     @Test fun verifyPlayStorePackage6_5_8() {

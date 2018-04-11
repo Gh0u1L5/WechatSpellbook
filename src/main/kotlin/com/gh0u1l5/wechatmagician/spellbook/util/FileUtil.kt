@@ -46,6 +46,19 @@ object FileUtil {
         }
     }
 
+    fun writeInputStreamToDisk(path: String, `in`: InputStream, bufferSize: Int = 8192) {
+        val file = File(path)
+        file.parentFile.mkdirs()
+        FileOutputStream(file).use {
+            val buffer = ByteArray(bufferSize)
+            var length = `in`.read(buffer)
+            while (length != -1) {
+                it.write(buffer, 0, length)
+                length = `in`.read(buffer)
+            }
+        }
+    }
+
     // writeBitmapToDisk writes the given bitmap to disk.
     fun writeBitmapToDisk(path: String, bitmap: Bitmap) {
         val out = ByteArrayOutputStream()
