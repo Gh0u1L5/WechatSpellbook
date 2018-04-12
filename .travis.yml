@@ -9,8 +9,7 @@ env:
     - BUILD_API=android-27
     - BUILD_TOOLS=build-tools-27.0.3
   matrix:
-    - EMULATOR_API=android-19 EMULATOR_ABI=armeabi-v7a
-    - EMULATOR_API=android-21 EMULATOR_ABI=armeabi-v7a
+    - EMULATOR_API=android-22 EMULATOR_ABI=armeabi-v7a
     - EMULATOR_API=android-24 EMULATOR_ABI=armeabi-v7a
 
 android:
@@ -40,24 +39,17 @@ before_install:
   - export PATH=$GRADLE_HOME/bin:$PATH
 
 before_script:
-  # Update all the packages.
-  - echo y | sdkmanager --update
-  # Install the emulator API.
-  - echo y | sdkmanager "platforms;${EMULATOR_API}"
+  # Update tools for AVD manager.
+  - echo y | sdkmanager "tools"
   # Install the system image.
   - echo y | sdkmanager "system-images;${EMULATOR_API};default;${EMULATOR_ABI}"
   # Create emulator for the script. Meant to race the install task.
   - echo no | avdmanager create avd --force -n test -k "system-images;${EMULATOR_API};default;${EMULATOR_ABI}"
-  # Start emulator with 2GB memory and 1GB system partition.
+  # Start emulator with 3GB memory and 1GB system partition.
   - export PATH=$ANDROID_HOME/emulator:$PATH
-  - emulator -avd test -no-audio -no-snapshot -no-window -screen no-touch -memory 2048 -partition-size 1024 &
+  - emulator -avd test -no-audio -no-window -memory 3072 -partition-size 1024 &
   # Wait for the emulator to boot.
   - android-wait-for-emulator
-  # Turn off the animation and unlock the screen.
-  - adb shell settings put global window_animation_scale 0 &
-  - adb shell settings put global transition_animation_scale 0 &
-  - adb shell settings put global animator_duration_scale 0 &
-  - adb shell input keyevent 82 &
 
 script:
   - travis_wait 40 gradle build connectedCheck
