@@ -25,10 +25,9 @@ Wechat Spellbook 是一个使用Kotlin编写的开源微信插件框架，底层
 ## 开发文档
 * [简介](https://github.com/Gh0u1L5/WechatSpellbook/wiki/Home)
 * [快速上手](https://github.com/Gh0u1L5/WechatSpellbook/wiki/快速上手)
-* 教程
-  - Plugin架构与使用
-  - Hooker架构与使用
-  - Mirror反射集合
+* 开发教程
+  - [事件机制](https://github.com/Gh0u1L5/WechatSpellbook/wiki/事件机制)
+  - 反射集合
   - 混淆与自动适配
 * 逆向技巧
   - 常见逆向工具
@@ -36,6 +35,7 @@ Wechat Spellbook 是一个使用Kotlin编写的开源微信插件框架，底层
   - 堆栈跟踪
   - Support库
   - 免重启调试插件
+  
 
 ## 关于VirtualXposed
 
