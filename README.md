@@ -13,6 +13,8 @@ Wechat Spellbook 是一个使用Kotlin编写的开源微信插件框架，底层
 ## 便利特色
 
 * 使用一套API __自动分析__ 微信内部结构特征，__避免手工适配__ 每个微信版本不同的类名、方法名。
+  - 每次微信更新的时候，都会使用写好的单元测试自动验证是否有特征失效。
+  - 精心设计的框架保证了开发者可以轻松拓展添加自己需要的特征，同时通过惰性求值保证了没用上的特征不会影响启动性能。
 * 框架内部设计了 _Plugin_ 和 _Hooker_ 两种不同的事件体系。
   - _Plugin_ 对接Spellbook接口，使开发者能够直接使用设计好的事件消息，保证 __便利性__ 。
   - _Hooker_ 对接Xposed接口，使开发者能够按照传统的Xposed风格自由发挥，保证 __自由度__ 。
@@ -23,10 +25,9 @@ Wechat Spellbook 是一个使用Kotlin编写的开源微信插件框架，底层
 ## 开发文档
 * [简介](https://github.com/Gh0u1L5/WechatSpellbook/wiki/Home)
 * [快速上手](https://github.com/Gh0u1L5/WechatSpellbook/wiki/快速上手)
-* 教程
-  - Plugin架构与使用
-  - Hooker架构与使用
-  - Mirror反射集合
+* 开发教程
+  - [事件机制](https://github.com/Gh0u1L5/WechatSpellbook/wiki/事件机制)
+  - 反射集合
   - 混淆与自动适配
 * 逆向技巧
   - 常见逆向工具
@@ -34,6 +35,7 @@ Wechat Spellbook 是一个使用Kotlin编写的开源微信插件框架，底层
   - 堆栈跟踪
   - Support库
   - 免重启调试插件
+  
 
 ## 关于VirtualXposed
 
