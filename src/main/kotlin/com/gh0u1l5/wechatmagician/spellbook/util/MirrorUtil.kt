@@ -2,6 +2,9 @@ package com.gh0u1l5.wechatmagician.spellbook.util
 
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
 
+/**
+ * MirrorUtil contains the helper functions to check mirror classes/methods/fields.
+ */
 object MirrorUtil {
     fun collectFields(instance: Any): List<Pair<String, Any>> {
         return instance::class.java.declaredFields.filter { field ->

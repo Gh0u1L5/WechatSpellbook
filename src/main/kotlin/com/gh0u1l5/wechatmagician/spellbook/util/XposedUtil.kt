@@ -8,16 +8,26 @@ import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.trySilently
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
 
+/**
+ * XposedUtil contains the helper functions about handling hookers.
+ */
 object XposedUtil {
-
+    /**
+     * the [HandlerThread] that handles all the hookers
+     */
     private val hookerHandlerThread = HandlerThread("HookerHandler").apply { start() }
+
+    /**
+     * the [Handler] that is bound to [hookerHandlerThread]
+     */
     private val hookerHandler: Handler = Handler(hookerHandlerThread.looper)
 
     /**
-     * Hooks functions in suitable strategy for corresponding API levels. NOTE: for Android 7.X or
-     * later, multi-thread causes unexpected crashes with WeXposed, so we drop this feature for now.
+     * tryHook hooks the functions using the suitable strategies for different API levels. NOTE: for
+     * Android 7.X or later, multi-thread causes unexpected crashes with WeXposed, so we drop this
+     * feature for now.
      *
-     * @param hook the callback function that actually hook functions using Xposed.
+     * @param hook the callback function that actually hooks the functions using Xposed.
      */
     private fun tryHook(hook: () -> Unit) {
         when {
@@ -27,6 +37,9 @@ object XposedUtil {
         }
     }
 
+    /**
+     * postHooker posts the hooker to [hookerHandlerThread] for further process.
+     */
     fun postHooker(hooker: Hooker) {
         hookerHandler.post {
             tryHook {

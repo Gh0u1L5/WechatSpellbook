@@ -109,15 +109,14 @@ object SpellBook {
      * @param lpparam the LoadPackageParam object that describes the current process, which should
      * be the same one passed to [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage].
      * @param plugins the list of custom plugins written by the developer, which should implement
-     * one or more interfaces in package [com.gh0u1l5.wechatmagician.spellbook.interfaces].
-     * @param hookers the list of custom hookers written by the developer, which should implement
-     * the [HookerProvider] and override [HookerProvider.provideStaticHookers] method.
+     * one or more interfaces in [com.gh0u1l5.wechatmagician.spellbook.interfaces] or override the
+     * method [HookerProvider.provideStaticHookers].
      */
-    fun startup(lpparam: XC_LoadPackage.LoadPackageParam, plugins: List<Any>?, hookers: List<HookerProvider>?) {
-        log("Wechat SpellBook: ${plugins?.size ?: 0} plugins, ${hookers?.size ?: 0} hookers.")
+    fun startup(lpparam: XC_LoadPackage.LoadPackageParam, plugins: List<Any>?) {
+        log("Wechat SpellBook: ${plugins?.size ?: 0} plugins.")
         WechatGlobal.init(lpparam)
         registerPlugins(plugins)
-        registerHookers(hookers)
+        registerHookers(plugins)
     }
 
     /**
@@ -144,12 +143,13 @@ object SpellBook {
     /**
      * Registers all the custom hookers to the Xposed framework using [XposedUtil.postHooker].
      */
-    private fun registerHookers(hookers: List<HookerProvider>?) {
-        if (hookers == null) {
+    private fun registerHookers(plugins: List<Any>?) {
+        if (plugins == null) {
             return
         }
-        (listOf(ListViewHider, MenuAppender) + hookers).forEach { provider ->
-            provider.provideStaticHookers()?.forEach { hooker ->
+        val providers = plugins.filter { it is HookerProvider }
+        (providers + listOf(ListViewHider, MenuAppender)).forEach { provider ->
+            (provider as HookerProvider).provideStaticHookers()?.forEach { hooker ->
                 if (!hooker.hasHooked) {
                     XposedUtil.postHooker(hooker)
                 }

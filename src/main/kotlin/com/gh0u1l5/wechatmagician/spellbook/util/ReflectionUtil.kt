@@ -8,7 +8,9 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 
-// ReflectionUtil is a helper object for static analysis
+/**
+ * ReflectionUtil contains the helper functions for APK analysis.
+ */
 object ReflectionUtil {
 
     class ClassName(classType: String) { /* classType example: Ljava/lang/String; */

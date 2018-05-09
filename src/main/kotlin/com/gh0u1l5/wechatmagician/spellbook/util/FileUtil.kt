@@ -10,9 +10,13 @@ import java.lang.System.currentTimeMillis
 import java.text.SimpleDateFormat
 import java.util.*
 
-// FileUtil is a helper object for file I/O.
+/**
+ * FileUtil contains the helper functions for file I/O.
+ */
 object FileUtil {
-    // writeBytesToDisk writes the given bytes to specific path.
+    /**
+     * writeBytesToDisk creates a file and writes the given data into it.
+     */
     fun writeBytesToDisk(path: String, content: ByteArray) {
         val file = File(path)
         file.parentFile.mkdirs()
@@ -21,14 +25,18 @@ object FileUtil {
         }
     }
 
-    // readBytesFromDisk returns all the bytes of a binary file.
+    /**
+     * readBytesFromDisk returns all the bytes of a binary file.
+     */
     fun readBytesFromDisk(path: String): ByteArray {
         return FileInputStream(path).use {
             it.readBytes()
         }
     }
 
-    // writeObjectToDisk writes a serializable object to disk.
+    /**
+     * writeObjectToDisk writes a [Serializable] object onto the disk.
+     */
     fun writeObjectToDisk(path: String, obj: Serializable) {
         val out = ByteArrayOutputStream()
         ObjectOutputStream(out).use {
@@ -37,7 +45,9 @@ object FileUtil {
         writeBytesToDisk(path, out.toByteArray())
     }
 
-    // readObjectFromDisk reads a serializable object from disk.
+    /**
+     * readObjectFromDisk reads a [Serializable] object from the disk.
+     */
     fun readObjectFromDisk(path: String): Any? {
         val bytes = readBytesFromDisk(path)
         val ins = ByteArrayInputStream(bytes)
@@ -46,6 +56,14 @@ object FileUtil {
         }
     }
 
+    /**
+     * writeInputStreamToDisk forward the data from a [InputStream] to a file, this is extremely
+     * helpful when the device has a low memory.
+     *
+     * @param path the path of the destination
+     * @param `in` the [InputStream] that provides the data
+     * @param bufferSize default buffer size, one may set a larger number for better performance.
+     */
     fun writeInputStreamToDisk(path: String, `in`: InputStream, bufferSize: Int = 8192) {
         val file = File(path)
         file.parentFile.mkdirs()
@@ -59,14 +77,18 @@ object FileUtil {
         }
     }
 
-    // writeBitmapToDisk writes the given bitmap to disk.
+    /**
+     * writeBitmapToDisk saves a given [Bitmap] object to disk.
+     */
     fun writeBitmapToDisk(path: String, bitmap: Bitmap) {
         val out = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
         writeBytesToDisk(path, out.toByteArray())
     }
 
-    // writeOnce ensures that the writeCallback will only be executed once for each boot.
+    /**
+     * writeOnce ensures that the write callback will only be executed once after start up.
+     */
     fun writeOnce(path: String, writeCallback: (String) -> Unit) {
         val file = File(path)
         if (!file.exists()) {
@@ -80,11 +102,15 @@ object FileUtil {
         }
     }
 
-    // createTimeTag returns the current time in a simple format as a time tag.
+    /**
+     * createTimeTag returns the current time in a simple format as a time tag.
+     */
     private val formatter = SimpleDateFormat("yyyy-MM-dd-HHmmss", Locale.getDefault())
     fun createTimeTag(): String = formatter.format(Calendar.getInstance().time)
 
-    // notifyNewMediaFile notifies all the gallery apps that there is a new file to scan.
+    /**
+     * notifyNewMediaFile notifies all the apps that there is a new media file to scan.
+     */
     fun notifyNewMediaFile(path: String, context: Context?) {
         val intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
         context?.sendBroadcast(intent.apply {
