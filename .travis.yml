@@ -9,7 +9,6 @@ env:
     - BUILD_API=android-27
     - BUILD_TOOLS=build-tools-27.0.3
   matrix:
-    - EMULATOR_API=android-22 EMULATOR_ABI=armeabi-v7a
     - EMULATOR_API=android-24 EMULATOR_ABI=armeabi-v7a
 
 android:
@@ -20,6 +19,9 @@ android:
     - $BUILD_API
     # The BuildTools version used by your project
     - $BUILD_TOOLS
+    # The SDK version used to perform unit tests
+    - $EMULATOR_API
+    - sys-img-${EMULATOR_ABI}-${EMULATOR_API}
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -39,17 +41,12 @@ before_install:
   - export PATH=$GRADLE_HOME/bin:$PATH
 
 before_script:
-  # Update tools for AVD manager.
-  - echo y | sdkmanager "tools"
-  # Install the system image.
-  - echo y | sdkmanager "system-images;${EMULATOR_API};default;${EMULATOR_ABI}"
   # Create emulator for the script. Meant to race the install task.
-  - echo no | avdmanager create avd --force -n test -k "system-images;${EMULATOR_API};default;${EMULATOR_ABI}"
+  - echo no | android create avd --force -n test -t $EMULATOR_API --abi $EMULATOR_ABI
   # Start emulator with 3GB memory and 1GB system partition.
-  - export PATH=$ANDROID_HOME/emulator:$PATH
-  - emulator -avd test -no-audio -no-window -memory 3072 -partition-size 1024 &
+  - emulator -avd test -no-window -memory 3072 -partition-size 1024 &
   # Wait for the emulator to boot.
   - android-wait-for-emulator
 
 script:
-  - travis_wait 40 gradle build connectedCheck
+  - travis_wait 60 gradle build connectedCheck
