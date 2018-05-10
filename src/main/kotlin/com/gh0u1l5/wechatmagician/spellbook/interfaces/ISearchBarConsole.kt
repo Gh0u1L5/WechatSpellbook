@@ -8,6 +8,7 @@ interface ISearchBarConsole {
      *
      * @param context a [Context] that can be used for later operations.
      * @param command the commend entered by the user.
+     * @return true if the command should be consumed, otherwise return false.
      */
     fun onHandleCommand(context: Context, command: String) = false
 }
