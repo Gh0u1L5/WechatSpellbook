@@ -69,7 +69,7 @@ object Adapters : EventCenter() {
                 val position    = param.args[0] as Int
                 val convertView = param.args[1] as View?
                 val parent      = param.args[2] as ViewGroup
-                notifyWithOperation("onHeaderViewListAdapterGettingView", param) { plugin ->
+                notifyForOperations("onHeaderViewListAdapterGettingView", param) { plugin ->
                     (plugin as IAdapterHook).onHeaderViewListAdapterGettingView(adapter, position, convertView, parent)
                 }
             }
@@ -79,7 +79,7 @@ object Adapters : EventCenter() {
                 val convertView = param.args[1] as View?
                 val parent      = param.args[2] as ViewGroup
                 val result      = param.result as View?
-                notifyWithOperation("onHeaderViewListAdapterGotView", param) { plugin ->
+                notifyForOperations("onHeaderViewListAdapterGotView", param) { plugin ->
                     (plugin as IAdapterHook).onHeaderViewListAdapterGotView(adapter, position, convertView, parent, result)
                 }
             }

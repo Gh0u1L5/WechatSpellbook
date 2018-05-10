@@ -30,7 +30,7 @@ object Notifications : EventCenter() {
                 val content  = raw.data.getString("notification.show.message.content")
                 val type     = raw.data.getInt("notification.show.message.type")
                 val tipsFlag = raw.data.getInt("notification.show.tipsflag")
-                notifyWithInterrupt("onMessageHandling", param) { plugin ->
+                notifyForBypassFlags("onMessageHandling", param) { plugin ->
                     (plugin as INotificationHook).onMessageHandling(
                             INotificationHook.Message(talker, content, type, tipsFlag))
                 }

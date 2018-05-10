@@ -43,7 +43,7 @@ object Storage : EventCenter() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val msgObject = param.args[0]
                 val msgId = getLongField(msgObject, "field_msgId")
-                notifyWithInterrupt("onMessageStorageInserting", param) { plugin ->
+                notifyForBypassFlags("onMessageStorageInserting", param) { plugin ->
                     (plugin as IMessageStorageHook).onMessageStorageInserting(msgId, msgObject)
                 }
             }
@@ -73,7 +73,7 @@ object Storage : EventCenter() {
                 val imageId = param.args[0] as String?
                 val prefix = param.args[1] as String?
                 val suffix = param.args[2] as String?
-                notifyWithInterrupt("onImageStorageLoading", param) { plugin ->
+                notifyForBypassFlags("onImageStorageLoading", param) { plugin ->
                     (plugin as IImageStorageHook).onImageStorageLoading(imageId, prefix, suffix)
                 }
             }

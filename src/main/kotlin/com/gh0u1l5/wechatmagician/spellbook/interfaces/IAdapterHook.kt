@@ -33,9 +33,9 @@ interface IAdapterHook {
      * @param convertView the old view to reuse, if possible.
      * @param parent the parent that this view will eventually be attached to.
      * @return to bypass the original method, return a View object wrapped by [Operation.replacement]
-     * or [Operation.interruption], otherwise return [Operation.nop].
+     * or a throwable wrapped by [Operation.interruption], otherwise return [Operation.nop].
      */
-    fun onHeaderViewListAdapterGettingView(adapter: Any, position: Int, convertView: View?, parent: ViewGroup): Operation<View?> = nop()
+    fun onHeaderViewListAdapterGettingView(adapter: Any, position: Int, convertView: View?, parent: ViewGroup): Operation<View> = nop()
 
     /**
      * Called when an HeaderViewListAdapter object has returned from [Adapter.getView] method.
@@ -48,5 +48,5 @@ interface IAdapterHook {
      * @return to replace the original result, return a View object wrapped by [Operation.replacement],
      * otherwise return [Operation.nop].
      */
-    fun onHeaderViewListAdapterGotView(adapter: Any, position: Int, convertView: View?, parent: ViewGroup, result: View?): Operation<View?> = nop()
+    fun onHeaderViewListAdapterGotView(adapter: Any, position: Int, convertView: View?, parent: ViewGroup, result: View?): Operation<View> = nop()
 }

@@ -27,14 +27,14 @@ object FileSystem : EventCenter() {
         findAndHookMethod(C.File, "delete", object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val file = param.thisObject as File
-                notifyWithOperation("onFileDeleting", param) { plugin ->
+                notifyForOperations("onFileDeleting", param) { plugin ->
                     (plugin as IFileSystemHook).onFileDeleting(file)
                 }
             }
             override fun afterHookedMethod(param: MethodHookParam) {
                 val file   = param.thisObject as File
                 val result = param.result as Boolean
-                notifyWithOperation("onFileDeleted", param) { plugin ->
+                notifyForOperations("onFileDeleted", param) { plugin ->
                     (plugin as IFileSystemHook).onFileDeleted(file, result)
                 }
             }

@@ -25,7 +25,7 @@ object XmlParser : EventCenter() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val xml  = param.args[0] as String
                 val root = param.args[1] as String
-                notifyWithOperation("onXmlParsing", param) { plugin ->
+                notifyForOperations("onXmlParsing", param) { plugin ->
                     (plugin as IXmlParserHook).onXmlParsing(xml, root)
                 }
             }

@@ -15,7 +15,7 @@ interface IFileSystemHook {
      * @return to bypass the original method, return a Boolean wrapped by [Operation.replacement],
      * otherwise return [Operation.nop].
      */
-    fun onFileDeleting(file: File): Operation<Boolean?> = nop()
+    fun onFileDeleting(file: File): Operation<Boolean> = nop()
 
     /**
      * Called when a File object has returned from [File.delete]
@@ -25,7 +25,7 @@ interface IFileSystemHook {
      * @return to replace the original result, return a Boolean wrapped by [Operation.replacement],
      * otherwise return [Operation.nop].
      */
-    fun onFileDeleted(file: File, result: Boolean): Operation<Boolean?> = nop()
+    fun onFileDeleted(file: File, result: Boolean): Operation<Boolean> = nop()
 
     /**
      * Called when a [FileInputStream] object is being created.

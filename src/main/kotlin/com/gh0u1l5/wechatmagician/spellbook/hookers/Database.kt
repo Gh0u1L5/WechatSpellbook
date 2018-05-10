@@ -38,7 +38,7 @@ object Database : EventCenter() {
                 val factory  = param.args[1]
                 val flags    = param.args[2] as Int
                 val handler  = param.args[3]
-                notifyWithOperation("onDatabaseOpening", param) { plugin ->
+                notifyForOperations("onDatabaseOpening", param) { plugin ->
                     (plugin as IDatabaseHook).onDatabaseOpening(path, factory, flags, handler)
                 }
             }
@@ -48,7 +48,7 @@ object Database : EventCenter() {
                 val flags    = param.args[2] as Int
                 val handler  = param.args[3]
                 val result   = param.result
-                notifyWithOperation("onDatabaseOpened", param) { plugin ->
+                notifyForOperations("onDatabaseOpened", param) { plugin ->
                     (plugin as IDatabaseHook).onDatabaseOpened(path, factory, flags, handler, result)
                 }
             }
@@ -67,7 +67,7 @@ object Database : EventCenter() {
                 val selectionArgs = param.args[2] as Array<String>?
                 val editTable     = param.args[3] as String?
                 val cancellation  = param.args[4]
-                notifyWithOperation("onDatabaseQuerying", param) { plugin ->
+                notifyForOperations("onDatabaseQuerying", param) { plugin ->
                     (plugin as IDatabaseHook).onDatabaseQuerying(
                             thisObject, factory, sql, selectionArgs, editTable, cancellation)
                 }
@@ -81,7 +81,7 @@ object Database : EventCenter() {
                 val editTable     = param.args[3] as String?
                 val cancellation  = param.args[4]
                 val result        = param.result
-                notifyWithOperation("onDatabaseQueried", param) { plugin ->
+                notifyForOperations("onDatabaseQueried", param) { plugin ->
                     (plugin as IDatabaseHook).onDatabaseQueried(
                             thisObject, factory, sql, selectionArgs, editTable, cancellation, result)
                 }
@@ -99,7 +99,7 @@ object Database : EventCenter() {
                 val nullColumnHack    = param.args[1] as String?
                 val initialValues     = param.args[2] as ContentValues?
                 val conflictAlgorithm = param.args[3] as Int
-                notifyWithOperation("onDatabaseInserting", param) { plugin ->
+                notifyForOperations("onDatabaseInserting", param) { plugin ->
                     (plugin as IDatabaseHook).onDatabaseInserting(
                             thisObject, table, nullColumnHack, initialValues, conflictAlgorithm)
                 }
@@ -111,7 +111,7 @@ object Database : EventCenter() {
                 val initialValues     = param.args[2] as ContentValues?
                 val conflictAlgorithm = param.args[3] as Int
                 val result            = param.result as Long
-                notifyWithOperation("onDatabaseInserted", param) { plugin ->
+                notifyForOperations("onDatabaseInserted", param) { plugin ->
                     (plugin as IDatabaseHook).onDatabaseInserted(
                             thisObject, table, nullColumnHack, initialValues, conflictAlgorithm, result)
                 }
@@ -131,7 +131,7 @@ object Database : EventCenter() {
                 val whereClause       = param.args[2] as String?
                 val whereArgs         = param.args[3] as Array<String>?
                 val conflictAlgorithm = param.args[4] as Int
-                notifyWithOperation("onDatabaseUpdating", param) { plugin ->
+                notifyForOperations("onDatabaseUpdating", param) { plugin ->
                     (plugin as IDatabaseHook).onDatabaseUpdating(
                             thisObject, table, values, whereClause, whereArgs, conflictAlgorithm)
                 }
@@ -145,7 +145,7 @@ object Database : EventCenter() {
                 val whereArgs         = param.args[3] as Array<String>?
                 val conflictAlgorithm = param.args[4] as Int
                 val result            = param.result as Int
-                notifyWithOperation("onDatabaseUpdated", param) { plugin ->
+                notifyForOperations("onDatabaseUpdated", param) { plugin ->
                     (plugin as IDatabaseHook).onDatabaseUpdated(
                             thisObject, table, values, whereClause, whereArgs, conflictAlgorithm, result)
                 }
@@ -163,7 +163,7 @@ object Database : EventCenter() {
                 val table       = param.args[0] as String
                 val whereClause = param.args[1] as String?
                 val whereArgs   = param.args[2] as Array<String>?
-                notifyWithOperation("onDatabaseDeleting", param) { plugin ->
+                notifyForOperations("onDatabaseDeleting", param) { plugin ->
                     (plugin as IDatabaseHook).onDatabaseDeleting(thisObject, table, whereClause, whereArgs)
                 }
             }
@@ -174,7 +174,7 @@ object Database : EventCenter() {
                 val whereClause = param.args[1] as String?
                 val whereArgs   = param.args[2] as Array<String>?
                 val result      = param.result as Int
-                notifyWithOperation("onDatabaseDeleted", param) { plugin ->
+                notifyForOperations("onDatabaseDeleted", param) { plugin ->
                     (plugin as IDatabaseHook).onDatabaseDeleted(thisObject, table, whereClause, whereArgs, result)
                 }
             }
@@ -191,7 +191,7 @@ object Database : EventCenter() {
                 val sql          = param.args[0] as String
                 val bindArgs     = param.args[1] as Array<Any?>?
                 val cancellation = param.args[2]
-                notifyWithInterrupt("onDatabaseExecuting", param) { plugin ->
+                notifyForBypassFlags("onDatabaseExecuting", param) { plugin ->
                     (plugin as IDatabaseHook).onDatabaseExecuting(thisObject, sql, bindArgs, cancellation)
                 }
             }

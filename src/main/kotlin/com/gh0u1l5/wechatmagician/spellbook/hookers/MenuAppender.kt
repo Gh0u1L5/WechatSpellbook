@@ -93,7 +93,7 @@ object MenuAppender : EventCenter() {
                 val menu = param.args[0] as ContextMenu
                 val view = param.args[1] as View
 
-                currentMenuItems = notifyForResult("onPopupMenuForContactsCreating") { plugin ->
+                currentMenuItems = notifyForResults("onPopupMenuForContactsCreating") { plugin ->
                     (plugin as IPopupMenuHook).onPopupMenuForContactsCreating(currentUsername ?: "")
                 }.flatten().sortedBy { it.itemId }
 
@@ -130,7 +130,7 @@ object MenuAppender : EventCenter() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val menu = param.args[0] as ContextMenu
 
-                currentMenuItems = notifyForResult("onPopupMenuForConversationsCreating") { plugin ->
+                currentMenuItems = notifyForResults("onPopupMenuForConversationsCreating") { plugin ->
                     (plugin as IPopupMenuHook).onPopupMenuForConversationsCreating(currentUsername ?: "")
                 }.flatten().sortedBy { it.itemId }
 
