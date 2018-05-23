@@ -13,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object ReflectionUtil {
 
+    val TAG: String = javaClass.simpleName
+
     class ClassName(classType: String) { /* classType example: Ljava/lang/String; */
         val sections = classType.substring(1, classType.length - 1).split('/')
         val size = sections.size
@@ -21,23 +23,39 @@ object ReflectionUtil {
 
     class Classes(private val classes: List<Class<*>>) {
         fun filterBySuper(superClass: Class<*>?): Classes {
-            return Classes(classes.filter { it.superclass == superClass })
+            return Classes(classes.filter { it.superclass == superClass }.also {
+                if (it.isEmpty()) {
+                    Log.w(TAG, "filterBySuper found nothing, super class = ${superClass?.simpleName}")
+                }
+            })
         }
 
         fun filterByEnclosingClass(enclosingClass: Class<*>?): Classes {
-            return Classes(classes.filter { it.enclosingClass == enclosingClass })
+            return Classes(classes.filter { it.enclosingClass == enclosingClass }.also {
+                if (it.isEmpty()) {
+                    Log.w(TAG, "filterByEnclosingClass found nothing, enclosing class = ${enclosingClass?.simpleName} ")
+                }
+            })
         }
 
         fun filterByMethod(returnType: Class<*>?, methodName: String, vararg parameterTypes: Class<*>): Classes {
             return Classes(classes.filter { clazz ->
                 val method = findMethodExactIfExists(clazz, methodName, *parameterTypes)
                 method != null && method.returnType == returnType ?: method.returnType
+            }.also {
+                if (it.isEmpty()) {
+                    Log.w(TAG, "filterByMethod found nothing, returnType = ${returnType?.simpleName}, methodName = $methodName, parameterTypes = ${parameterTypes.joinToString("|") { it.simpleName }}")
+                }
             })
         }
 
         fun filterByMethod(returnType: Class<*>?, vararg parameterTypes: Class<*>): Classes {
             return Classes(classes.filter { clazz ->
                 findMethodsByExactParameters(clazz, returnType, *parameterTypes).isNotEmpty()
+            }.also {
+                if (it.isEmpty()) {
+                    Log.w(TAG, "filterByMethod found nothing, returnType = ${returnType?.simpleName}, parameterTypes = ${parameterTypes.joinToString("|") { it.simpleName }}")
+                }
             })
         }
 
@@ -45,12 +63,20 @@ object ReflectionUtil {
             return Classes(classes.filter { clazz ->
                 val field = findFieldIfExists(clazz, fieldName)
                 field != null && field.type.canonicalName == fieldType
+            }.also {
+                if (it.isEmpty()) {
+                    Log.w(TAG, "filterByField found nothing, fieldName = $fieldName, fieldType = $fieldType")
+                }
             })
         }
 
         fun filterByField(fieldType: String): Classes {
             return Classes(classes.filter { clazz ->
                 findFieldsWithType(clazz, fieldType).isNotEmpty()
+            }.also {
+                if (it.isEmpty()) {
+                    Log.w(TAG, "filterByField found nothing, fieldType = $fieldType")
+                }
             })
         }
 
