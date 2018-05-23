@@ -1,6 +1,9 @@
 package com.gh0u1l5.wechatmagician.spellbook.util
 
 import android.util.Log
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
 import kotlin.concurrent.thread
 
 /**
@@ -35,5 +38,9 @@ object BasicUtil {
                 Log.e("Xposed", Log.getStackTraceString(t))
             }
         }
+    }
+
+    fun <A, B>Array<A>.parallelMap(f: suspend (A) -> B): List<B> = runBlocking {
+        map { async(CommonPool) { f(it) } }.map { it.await() }
     }
 }

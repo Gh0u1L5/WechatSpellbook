@@ -19,6 +19,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka-android'
 
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -72,6 +78,7 @@ dependencies {
 
     implementation 'net.dongliu:apk-parser:2.5.3'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.21'
 }
 
 dokka {
