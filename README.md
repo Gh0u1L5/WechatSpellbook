@@ -24,8 +24,8 @@ Wechat Spellbook 是一个使用Kotlin编写的开源微信插件框架，底层
   - Xposed自Android 7.0后偶发的，由于多线程导致ART崩溃的问题。
 
 ## 衍生项目
-[WechatMagician](https://github.com/Gh0u1L5/WechatMagician)
-[WechatBotXposed](https://github.com/Blankeer/WechatBotXposed)
+* [WechatMagician](https://github.com/Gh0u1L5/WechatMagician)
+* [WechatBotXposed](https://github.com/Blankeer/WechatBotXposed)
 
 ## 开发文档
 * [简介](https://github.com/Gh0u1L5/WechatSpellbook/wiki/Home)
