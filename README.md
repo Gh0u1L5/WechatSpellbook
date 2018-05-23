@@ -55,6 +55,6 @@ Wechat Spellbook 是一个使用Kotlin编写的开源微信插件框架，底层
 
 ## 打赏二维码
 
-应Issue [#5](https://github.com/Gh0u1L5/WechatSpellbook/issues/5) 的请求，贴上打赏二维码，争论结束。
+应 [Issue #5](https://github.com/Gh0u1L5/WechatSpellbook/issues/5) 的请求，贴上打赏二维码，让我们回归平和的技术讨论。
 
 <img src="https://github.com/Gh0u1L5/WechatMagician/raw/master/image/qrcode_tenpay.png" width="40%" /> <img src="https://github.com/Gh0u1L5/WechatMagician/raw/master/image/qrcode_alipay.jpg" width="40%" />
