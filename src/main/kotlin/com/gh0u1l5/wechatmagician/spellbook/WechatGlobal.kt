@@ -68,7 +68,13 @@ object WechatGlobal {
             }
         } else {
             lazy {
-                initializeChannel.wait(4000)
+                initializeChannel.wait(8000)
+                when (null) {
+                    wxVersion     -> throw Error("Invalid wxVersion")
+                    wxPackageName -> throw Error("Invalid wxPackageName")
+                    wxLoader      -> throw Error("Invalid wxLoader")
+                    wxClasses     -> throw Error("Invalid wxClasses")
+                }
                 initializer() ?: throw Error("Failed to evaluate $name")
             }
         }
@@ -111,8 +117,6 @@ object WechatGlobal {
                         ReflectionUtil.ClassName(clazz.classType)
                     }
                 }
-            } catch (t: Throwable) {
-                // Ignore this one
             } finally {
                 initializeChannel.done()
             }
