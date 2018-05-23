@@ -6,7 +6,6 @@ import com.gh0u1l5.wechatmagician.spellbook.SpellBook.getApplicationVersion
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.base.WaitChannel
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
-import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import net.dongliu.apk.parser.ApkFile
 import java.lang.ref.WeakReference
@@ -36,8 +35,10 @@ object WechatGlobal {
     @Volatile var wxLoader: ClassLoader? = null
     /**
      * A list holding a cache of full names for classes provided by the Wechat APK.
+     *
+     * Example: "Ljava/lang/String;"
      */
-    @Volatile var wxClasses: List<ReflectionUtil.ClassName>? = null
+    @Volatile var wxClasses: List<String>? = null
 
     /**
      * A flag indicating whether the codes are running under unit test mode.
@@ -67,7 +68,7 @@ object WechatGlobal {
                 initializer() ?: throw Error("Failed to evaluate $name")
             }
         } else {
-            lazy {
+            lazy(LazyThreadSafetyMode.PUBLICATION) {
                 initializeChannel.wait(8000)
                 when (null) {
                     wxVersion     -> throw Error("Invalid wxVersion")
@@ -113,9 +114,7 @@ object WechatGlobal {
                 wxLoader = lpparam.classLoader
 
                 ApkFile(lpparam.appInfo.sourceDir).use {
-                    wxClasses = it.dexClasses.map { clazz ->
-                        ReflectionUtil.ClassName(clazz.classType)
-                    }
+                    wxClasses = it.dexClasses.map { it.classType }
                 }
             } finally {
                 initializeChannel.done()

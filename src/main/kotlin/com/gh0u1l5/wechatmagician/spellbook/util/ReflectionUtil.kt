@@ -12,14 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
  * ReflectionUtil contains the helper functions for APK analysis.
  */
 object ReflectionUtil {
-
     val TAG: String = javaClass.simpleName
-
-    class ClassName(classType: String) { /* classType example: Ljava/lang/String; */
-        val sections = classType.substring(1, classType.length - 1).split('/')
-        val size = sections.size
-        val className = sections.joinToString(".")
-    }
 
     class Classes(private val classes: List<Class<*>>) {
         fun filterBySuper(superClass: Class<*>?): Classes {
@@ -128,30 +121,31 @@ object ReflectionUtil {
     }
 
     // findClassesFromPackage returns a list of all the classes contained in the given package.
-    @JvmStatic fun findClassesFromPackage(loader: ClassLoader, classes: List<ClassName>, packageName: String, depth: Int = 0): Classes {
+    @JvmStatic fun findClassesFromPackage(loader: ClassLoader, classes: List<String>, packageName: String, depth: Int = 0): Classes {
         if ((packageName to depth) in classCache) {
             return classCache[packageName to depth]!!
         }
 
-        val sections = packageName.split(".")
+        val packageLength = packageName.count { it == '.' } + 1
+        val packageDescriptor = "L${packageName.replace('.', '/')}"
         val result = Classes(classes.filter { clazz ->
-            val currentSections = clazz.sections.dropLast(1)
-            // Check depth
-            if (currentSections.size < sections.size) {
+            val currentPackageLength = clazz.count { it == '/' }
+            if (currentPackageLength < packageLength) {
                 return@filter false
             }
-            val currentDepth = currentSections.size - sections.size
+            // Check depth
+            val currentDepth = currentPackageLength - packageLength
             if (depth != -1 && depth != currentDepth) {
                 return@filter false
             }
             // Check prefix
-            for (i in sections.indices) {
-                if (currentSections[i] != sections[i]) {
-                    return@filter false
-                }
+            if (!clazz.startsWith(packageDescriptor)) {
+                return@filter false
             }
             return@filter true
-        }.mapNotNull { findClassIfExists(it.className, loader) })
+        }.mapNotNull {
+            findClassIfExists(it.substring(1, it.length - 1).replace('/', '.'), loader)
+        })
 
         classCache[packageName to depth] = result
         return result
