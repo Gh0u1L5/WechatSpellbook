@@ -123,13 +123,11 @@ object SpellBook {
      * Registers the given list of plugins asynchronously to all the event centers.
      */
     private fun registerPlugins(plugins: List<Any>?) {
-        if (plugins == null) {
-            return
-        }
+        val observers = plugins?.filter { it !is HookerProvider } ?: listOf()
         centers.forEach { center ->
             tryAsynchronously {
                 center.interfaces.forEach { `interface` ->
-                    plugins.forEach { plugin ->
+                    observers.forEach { plugin ->
                         val assignable = `interface`.isAssignableFrom(plugin::class.java)
                         if (assignable) {
                             center.register(`interface`, plugin)
@@ -144,10 +142,7 @@ object SpellBook {
      * Registers all the custom hookers to the Xposed framework using [XposedUtil.postHooker].
      */
     private fun registerHookers(plugins: List<Any>?) {
-        if (plugins == null) {
-            return
-        }
-        val providers = plugins.filter { it is HookerProvider }
+        val providers = plugins?.filter { it is HookerProvider } ?: listOf()
         (providers + listOf(ListViewHider, MenuAppender)).forEach { provider ->
             (provider as HookerProvider).provideStaticHookers()?.forEach { hooker ->
                 if (!hooker.hasHooked) {
