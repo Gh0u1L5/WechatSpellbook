@@ -110,7 +110,7 @@ object Database : EventCenter() {
                 val nullColumnHack    = param.args[1] as String?
                 val initialValues     = param.args[2] as ContentValues?
                 val conflictAlgorithm = param.args[3] as Int
-                val result            = param.result as Long
+                val result            = param.result as Long?
                 notifyForOperations("onDatabaseInserted", param) { plugin ->
                     (plugin as IDatabaseHook).onDatabaseInserted(
                             thisObject, table, nullColumnHack, initialValues, conflictAlgorithm, result)

@@ -92,7 +92,7 @@ interface IDatabaseHook {
      * @return to replace the original result, return a Long number wrapped by [Operation.replacement],
      * otherwise return [Operation.nop].
      */
-    fun onDatabaseInserted(thisObject: Any, table: String, nullColumnHack: String?, initialValues: ContentValues?, conflictAlgorithm: Int, result: Long): Operation<Long> = nop()
+    fun onDatabaseInserted(thisObject: Any, table: String, nullColumnHack: String?, initialValues: ContentValues?, conflictAlgorithm: Int, result: Long?): Operation<Long> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object is going to invoke [SQLiteDatabase.updateWithOnConflict] method.
