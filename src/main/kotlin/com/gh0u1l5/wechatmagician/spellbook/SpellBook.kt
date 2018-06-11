@@ -112,11 +112,11 @@ object SpellBook {
      * one or more interfaces in [com.gh0u1l5.wechatmagician.spellbook.interfaces] or override the
      * method [HookerProvider.provideStaticHookers].
      */
-    fun startup(lpparam: XC_LoadPackage.LoadPackageParam, plugins: List<Any>?) {
+    fun startup(lpparam: XC_LoadPackage.LoadPackageParam, plugins: List<Any>?, extra: Boolean = true) {
         log("Wechat SpellBook: ${plugins?.size ?: 0} plugins.")
         WechatGlobal.init(lpparam)
         registerPlugins(plugins)
-        registerHookers(plugins)
+        registerHookers(plugins, extra)
     }
 
     /**
@@ -141,9 +141,12 @@ object SpellBook {
     /**
      * Registers all the custom hookers to the Xposed framework using [XposedUtil.postHooker].
      */
-    private fun registerHookers(plugins: List<Any>?) {
-        val providers = plugins?.filter { it is HookerProvider } ?: listOf()
-        (providers + listOf(ListViewHider, MenuAppender)).forEach { provider ->
+    private fun registerHookers(plugins: List<Any>?, extra: Boolean = true) {
+        var providers = plugins?.filter { it is HookerProvider } ?: listOf()
+        if (extra) {
+            providers += listOf(ListViewHider, MenuAppender)
+        }
+        providers.forEach { provider ->
             (provider as HookerProvider).provideStaticHookers()?.forEach { hooker ->
                 if (!hooker.hasHooked) {
                     XposedUtil.postHooker(hooker)
