@@ -5,8 +5,6 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxClasses
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLoader
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxPackageName
-import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxVersion
-import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
@@ -17,16 +15,9 @@ object Classes {
     }
 
     val MsgInfoStorage: Class<*> by wxLazy("MsgInfoStorage") {
-        when {
-            wxVersion!! >= Version("6.5.8") ->
-                findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.storage")
-                        .filterByMethod(C.Long, MsgInfo, C.Boolean)
-                        .firstOrNull()
-            else ->
-                findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.storage")
-                        .filterByMethod(C.Long, MsgInfo)
-                        .firstOrNull()
-        }
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.storage")
+                .filterByMethod(C.Long, MsgInfo, C.Boolean)
+                .firstOrNull()
     }
 
     val ContactInfo: Class<*> by wxLazy("ContactInfo") {

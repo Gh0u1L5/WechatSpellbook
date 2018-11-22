@@ -71,46 +71,6 @@ class MirrorUnitTest {
         apkFile.delete()
     }
 
-    @Test fun verifyDomesticPackage6_5_3() {
-        verifyPackage("$DOMESTIC_DIR/wechat-v6.5.3.apk")
-    }
-
-    @Test fun verifyDomesticPackage6_5_4() {
-        verifyPackage("$DOMESTIC_DIR/wechat-v6.5.4.apk")
-    }
-
-    @Test fun verifyDomesticPackage6_5_7() {
-        verifyPackage("$DOMESTIC_DIR/wechat-v6.5.7.apk")
-    }
-
-    @Test fun verifyDomesticPackage6_5_8() {
-        verifyPackage("$DOMESTIC_DIR/wechat-v6.5.8.apk")
-    }
-
-    @Test fun verifyDomesticPackage6_5_10() {
-        verifyPackage("$DOMESTIC_DIR/wechat-v6.5.10.apk")
-    }
-
-    @Test fun verifyDomesticPackage6_5_13() {
-        verifyPackage("$DOMESTIC_DIR/wechat-v6.5.13.apk")
-    }
-
-    @Test fun verifyDomesticPackage6_5_16() {
-        verifyPackage("$DOMESTIC_DIR/wechat-v6.5.16.apk")
-    }
-
-    @Test fun verifyDomesticPackage6_5_19() {
-        verifyPackage("$DOMESTIC_DIR/wechat-v6.5.19.apk")
-    }
-
-    @Test fun verifyDomesticPackage6_5_22() {
-        verifyPackage("$DOMESTIC_DIR/wechat-v6.5.22.apk")
-    }
-
-    @Test fun verifyDomesticPackage6_5_23() {
-        verifyPackage("$DOMESTIC_DIR/wechat-v6.5.23.apk")
-    }
-
     @Test fun verifyDomesticPackage6_6_0() {
         verifyPackage("$DOMESTIC_DIR/wechat-v6.6.0.apk")
     }
@@ -135,16 +95,16 @@ class MirrorUnitTest {
         verifyPackage("$DOMESTIC_DIR/wechat-v6.6.6.apk")
     }
 
-    @Test fun verifyPlayStorePackage6_5_8() {
-        verifyPackage("$PLAY_STORE_DIR/wechat-v6.5.8.apk")
+    @Test fun verifyDomesticPackage6_6_7() {
+        verifyPackage("$DOMESTIC_DIR/wechat-v6.6.7.apk")
     }
 
-    @Test fun verifyPlayStorePackage6_5_10() {
-        verifyPackage("$PLAY_STORE_DIR/wechat-v6.5.10.apk")
+    @Test fun verifyDomesticPackage6_7_2() {
+        verifyPackage("$DOMESTIC_DIR/wechat-v6.7.2.apk")
     }
 
-    @Test fun verifyPlayStorePackage6_5_23() {
-        verifyPackage("$PLAY_STORE_DIR/wechat-v6.5.23.apk")
+    @Test fun verifyDomesticPackage6_7_3() {
+        verifyPackage("$DOMESTIC_DIR/wechat-v6.7.3.apk")
     }
 
     @Test fun verifyPlayStorePackage6_6_1() {
@@ -153,5 +113,17 @@ class MirrorUnitTest {
 
     @Test fun verifyPlayStorePackage6_6_2() {
         verifyPackage("$PLAY_STORE_DIR/wechat-v6.6.2.apk")
+    }
+
+    @Test fun verifyPlayStorePackage6_6_6() {
+        verifyPackage("$PLAY_STORE_DIR/wechat-v6.6.6.apk")
+    }
+
+    @Test fun verifyPlayStorePackage6_6_7() {
+        verifyPackage("$PLAY_STORE_DIR/wechat-v6.6.7.apk")
+    }
+
+    @Test fun verifyPlayStorePackage6_7_3() {
+        verifyPackage("$PLAY_STORE_DIR/wechat-v6.7.3.apk")
     }
 }
