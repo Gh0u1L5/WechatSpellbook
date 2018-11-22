@@ -4,13 +4,19 @@ class WaitChannel {
     @Volatile private var done = false
     private val channel = java.lang.Object()
 
-    fun wait(millis: Long = 0L): Boolean {
+    private val current: Long
+        get() = System.currentTimeMillis()
+
+    fun wait(timeout: Long = 0L): Boolean {
+        if (done) return false
+
+        val start = current
         synchronized(channel) {
-            if (!done) {
-                channel.wait(millis)
-                return true
+            // Handle spurious wakeup.
+            while (!done && start + timeout > current) {
+                channel.wait(start + timeout - current)
             }
-            return false
+            return true
         }
     }
 
