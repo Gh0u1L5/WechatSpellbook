@@ -1,16 +1,15 @@
 package com.gh0u1l5.wechatmagician.spellbook
 
 import android.content.Context
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
 import android.util.Log
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorClasses
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorFields
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorMethods
 import com.gh0u1l5.wechatmagician.spellbook.util.FileUtil
-import com.gh0u1l5.wechatmagician.spellbook.util.MirrorUtil.clearUnitTestLazyFields
-import com.gh0u1l5.wechatmagician.spellbook.util.MirrorUtil.generateReportWithForceEval
+import com.gh0u1l5.wechatmagician.spellbook.util.MirrorUtil
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil
 import dalvik.system.PathClassLoader
 import net.dongliu.apk.parser.ApkFile
@@ -31,7 +30,7 @@ class MirrorUnitTest {
     private var context: Context? = null
 
     @Before fun initialize() {
-        context = InstrumentationRegistry.getContext()
+        context = InstrumentationRegistry.getInstrumentation().targetContext
     }
 
     private fun verifyPackage(apkPath: String) {
@@ -39,7 +38,7 @@ class MirrorUnitTest {
 
         val apkFile = File(cacheDir, apkPath)
         try {
-            javaClass.classLoader.getResourceAsStream(apkPath).use {
+            javaClass.classLoader!!.getResourceAsStream(apkPath).use {
                 FileUtil.writeInputStreamToDisk(apkFile.absolutePath, it)
             }
         } catch (t: Throwable) {
@@ -61,9 +60,10 @@ class MirrorUnitTest {
             ReflectionUtil.clearClassCache()
             ReflectionUtil.clearMethodCache()
             objects.forEach { instance ->
-                clearUnitTestLazyFields(instance)
+                MirrorUtil.clearUnitTestLazyFields(instance)
             }
-            generateReportWithForceEval(objects).forEach {
+
+            MirrorUtil.generateReportWithForceEval(objects).forEach {
                 Log.d("MirrorUnitTest", "Verified ${it.first} -> ${it.second}")
             }
         }

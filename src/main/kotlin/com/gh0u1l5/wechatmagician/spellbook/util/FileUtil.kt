@@ -15,27 +15,26 @@ import java.util.*
  */
 object FileUtil {
     /**
-     * writeBytesToDisk creates a file and writes the given data into it.
+     * Creates a file and writes the given data into it.
      */
     fun writeBytesToDisk(path: String, content: ByteArray) {
-        val file = File(path)
-        file.parentFile.mkdirs()
+        val file = File(path).also { it.parentFile.mkdirs() }
         FileOutputStream(file).use {
-            it.write(content)
+            BufferedOutputStream(it).write(content)
         }
     }
 
     /**
-     * readBytesFromDisk returns all the bytes of a binary file.
+     * Returns all the bytes of a binary file.
      */
     fun readBytesFromDisk(path: String): ByteArray {
         return FileInputStream(path).use {
-            it.readBytes()
+            BufferedInputStream(it).readBytes()
         }
     }
 
     /**
-     * writeObjectToDisk writes a [Serializable] object onto the disk.
+     * Writes a [Serializable] object onto the disk.
      */
     fun writeObjectToDisk(path: String, obj: Serializable) {
         val out = ByteArrayOutputStream()
@@ -46,7 +45,7 @@ object FileUtil {
     }
 
     /**
-     * readObjectFromDisk reads a [Serializable] object from the disk.
+     * Reads a [Serializable] object from the disk.
      */
     fun readObjectFromDisk(path: String): Any? {
         val bytes = readBytesFromDisk(path)
@@ -57,28 +56,28 @@ object FileUtil {
     }
 
     /**
-     * writeInputStreamToDisk forward the data from a [InputStream] to a file, this is extremely
-     * helpful when the device has a low memory.
+     * Forwards the data from a [InputStream] to a file, this is extremely helpful when the device
+     * has a low memory.
      *
      * @param path the path of the destination
-     * @param `in` the [InputStream] that provides the data
+     * @param ins the [InputStream] that provides the data
      * @param bufferSize default buffer size, one may set a larger number for better performance.
      */
-    fun writeInputStreamToDisk(path: String, `in`: InputStream, bufferSize: Int = 8192) {
+    fun writeInputStreamToDisk(path: String, ins: InputStream, bufferSize: Int = 8192) {
         val file = File(path)
         file.parentFile.mkdirs()
         FileOutputStream(file).use {
             val buffer = ByteArray(bufferSize)
-            var length = `in`.read(buffer)
+            var length = ins.read(buffer)
             while (length != -1) {
                 it.write(buffer, 0, length)
-                length = `in`.read(buffer)
+                length = ins.read(buffer)
             }
         }
     }
 
     /**
-     * writeBitmapToDisk saves a given [Bitmap] object to disk.
+     * Saves a given [Bitmap] object to disk.
      */
     fun writeBitmapToDisk(path: String, bitmap: Bitmap) {
         val out = ByteArrayOutputStream()
@@ -87,9 +86,9 @@ object FileUtil {
     }
 
     /**
-     * writeOnce ensures that the write callback will only be executed once after start up.
+     * Ensures that the write callback will only be executed once after start up.
      */
-    fun writeOnce(path: String, writeCallback: (String) -> Unit) {
+    inline fun writeOnce(path: String, writeCallback: (String) -> Unit) {
         val file = File(path)
         if (!file.exists()) {
             writeCallback(path)
@@ -103,13 +102,15 @@ object FileUtil {
     }
 
     /**
-     * createTimeTag returns the current time in a simple format as a time tag.
+     * Returns the current time in a simple format as a time tag.
      */
-    private val formatter = SimpleDateFormat("yyyy-MM-dd-HHmmss", Locale.getDefault())
+    private val formatter: SimpleDateFormat
+        get() = SimpleDateFormat("yyyy-MM-dd-HHmmss", Locale.getDefault())
+
     fun createTimeTag(): String = formatter.format(Calendar.getInstance().time)
 
     /**
-     * notifyNewMediaFile notifies all the apps that there is a new media file to scan.
+     * Notifies all the apps that there is a new media file to scan.
      */
     fun notifyNewMediaFile(path: String, context: Context?) {
         val intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)

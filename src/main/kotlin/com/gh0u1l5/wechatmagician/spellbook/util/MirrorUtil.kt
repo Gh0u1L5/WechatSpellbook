@@ -25,6 +25,24 @@ object MirrorUtil {
         }.flatten().sortedBy { it.first }
     }
 
+    /**
+     * WARNING: 仅供单元测试使用
+     */
+    fun clearUnitTestLazyFields(instance: Any) {
+        instance::class.java.declaredFields.forEach { field ->
+            if (Lazy::class.java.isAssignableFrom(field.type)) {
+                field.isAccessible = true
+                val lazyObject = field.get(instance)
+                if (lazyObject is WechatGlobal.UnitTestLazyImpl<*>) {
+                    lazyObject.refresh()
+                }
+            }
+        }
+    }
+
+    /**
+     * WARNING: 仅供单元测试使用
+     */
     fun generateReportWithForceEval(instances: List<Any>): List<Pair<String, String>> {
         return instances.map { instance ->
             collectFields(instance).map {
@@ -37,17 +55,5 @@ object MirrorUtil {
                 "${instance::class.java.canonicalName}.${it.first}" to it.second.toString()
             }
         }.flatten().sortedBy { it.first }
-    }
-
-    @JvmStatic fun clearUnitTestLazyFields(instance: Any) {
-        instance::class.java.declaredFields.forEach { field ->
-            if (Lazy::class.java.isAssignableFrom(field.type)) {
-                field.isAccessible = true
-                val lazyObject = field.get(instance)
-                if (lazyObject is WechatGlobal.UnitTestLazyImpl<*>) {
-                    lazyObject.refresh()
-                }
-            }
-        }
     }
 }

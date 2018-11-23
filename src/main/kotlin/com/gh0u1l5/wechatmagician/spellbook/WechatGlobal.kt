@@ -19,7 +19,7 @@ object WechatGlobal {
     /**
      * A [WaitChannel] blocking all the evaluations until [WechatGlobal.init] has finished.
      */
-    private val initializeChannel = WaitChannel()
+    val initializeChannel = WaitChannel()
 
     /**
      * A [Version] holding the version of current Wechat.
@@ -62,7 +62,7 @@ object WechatGlobal {
      * @param initializer the callback that actually initialize the lazy object.
      * @return a lazy object that can be used for lazy evaluation.
      */
-    fun <T> wxLazy(name: String, initializer: () -> T?): Lazy<T> {
+    inline fun <T> wxLazy(name: String, crossinline initializer: () -> T?): Lazy<T> {
         return if (wxUnitTestMode) {
             UnitTestLazyImpl {
                 initializer() ?: throw Error("Failed to evaluate $name")

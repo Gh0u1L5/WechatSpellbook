@@ -23,9 +23,10 @@ object XposedUtil {
     private val hookerHandler: Handler = Handler(hookerHandlerThread.looper)
 
     /**
-     * tryHook hooks the functions using the suitable strategies for different API levels. NOTE: for
-     * Android 7.X or later, multi-thread causes unexpected crashes with WeXposed, so we drop this
-     * feature for now.
+     * Hooks the functions using the suitable strategies for different API levels.
+     *
+     * NOTE: for Android 7.X or later, multi-thread causes unexpected crashes with WeXposed, so we
+     * drop this feature for now.
      *
      * @param hook the callback function that actually hooks the functions using Xposed.
      */
@@ -38,7 +39,7 @@ object XposedUtil {
     }
 
     /**
-     * postHooker posts the hooker to [hookerHandlerThread] for further process.
+     * Posts the hooker to [hookerHandlerThread] for further process.
      */
     fun postHooker(hooker: Hooker) {
         hookerHandler.post {
