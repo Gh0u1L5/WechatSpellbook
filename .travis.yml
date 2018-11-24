@@ -5,7 +5,7 @@ sudo: required
 env:
   global:
     - ADB_INSTALL_TIMEOUT=20 # minutes (2 minutes by default)
-    - GRADLE_VERSION=4.4
+    - GRADLE_VERSION=4.10
     - BUILD_API=android-27
     - BUILD_TOOLS=build-tools-27.0.3
   matrix:
