@@ -26,8 +26,8 @@ object Notifications : EventCenter() {
         findAndHookMethod(MMNotification_MessageHandler, "handleMessage", C.Message, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val raw = param.args[0] as? Message ?: return
-                val talker   = raw.data.getString("notification.show.talker")
-                val content  = raw.data.getString("notification.show.message.content")
+                val talker   = raw.data.getString("notification.show.talker") ?: return
+                val content  = raw.data.getString("notification.show.message.content") ?: return
                 val type     = raw.data.getInt("notification.show.message.type")
                 val tipsFlag = raw.data.getInt("notification.show.tipsflag")
                 notifyForBypassFlags("onMessageHandling", param) { plugin ->
@@ -37,8 +37,8 @@ object Notifications : EventCenter() {
             }
             override fun afterHookedMethod(param: MethodHookParam) {
                 val raw = param.args[0] as? Message ?: return
-                val talker   = raw.data.getString("notification.show.talker")
-                val content  = raw.data.getString("notification.show.message.content")
+                val talker   = raw.data.getString("notification.show.talker") ?: return
+                val content  = raw.data.getString("notification.show.message.content") ?: return
                 val type     = raw.data.getInt("notification.show.message.type")
                 val tipsFlag = raw.data.getInt("notification.show.tipsflag")
                 notify("onMessageHandled") { plugin ->
