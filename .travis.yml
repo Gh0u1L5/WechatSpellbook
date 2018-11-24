@@ -6,8 +6,8 @@ env:
   global:
     - ADB_INSTALL_TIMEOUT=20 # minutes (2 minutes by default)
     - GRADLE_VERSION=4.10
-    - BUILD_API=android-27
-    - BUILD_TOOLS=build-tools-27.0.3
+    - BUILD_API=android-28
+    - BUILD_TOOLS=build-tools-28.0.3
   matrix:
     - EMULATOR_API=android-24 EMULATOR_ABI=armeabi-v7a
 
