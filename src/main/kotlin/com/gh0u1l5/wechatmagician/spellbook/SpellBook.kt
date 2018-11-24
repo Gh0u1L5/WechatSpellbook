@@ -5,7 +5,7 @@ import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.HookerProvider
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.hookers.*
-import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
+import com.gh0u1l5.wechatmagician.spellbook.util.ParallelUtil.parallelForEach
 import com.gh0u1l5.wechatmagician.spellbook.util.XposedUtil
 import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.*
@@ -124,14 +124,12 @@ object SpellBook {
      */
     private fun registerPlugins(plugins: List<Any>?) {
         val observers = plugins?.filter { it !is HookerProvider } ?: listOf()
-        centers.forEach { center ->
-            tryAsynchronously {
-                center.interfaces.forEach { `interface` ->
-                    observers.forEach { plugin ->
-                        val assignable = `interface`.isAssignableFrom(plugin::class.java)
-                        if (assignable) {
-                            center.register(`interface`, plugin)
-                        }
+        centers.parallelForEach { center ->
+            center.interfaces.forEach { `interface` ->
+                observers.forEach { plugin ->
+                    val assignable = `interface`.isAssignableFrom(plugin::class.java)
+                    if (assignable) {
+                        center.register(`interface`, plugin)
                     }
                 }
             }
@@ -143,7 +141,7 @@ object SpellBook {
      */
     private fun registerHookers(plugins: List<Any>?) {
         val providers = plugins?.filter { it is HookerProvider } ?: listOf()
-        (providers + listOf(ListViewHider, MenuAppender)).forEach { provider ->
+        (providers + listOf(ListViewHider, MenuAppender)).parallelForEach { provider ->
             (provider as HookerProvider).provideStaticHookers()?.forEach { hooker ->
                 if (!hooker.hasHooked) {
                     XposedUtil.postHooker(hooker)

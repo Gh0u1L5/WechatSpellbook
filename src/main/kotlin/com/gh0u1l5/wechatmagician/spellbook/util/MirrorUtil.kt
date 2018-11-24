@@ -1,6 +1,7 @@
 package com.gh0u1l5.wechatmagician.spellbook.util
 
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
+import com.gh0u1l5.wechatmagician.spellbook.util.ParallelUtil.parallelMap
 
 /**
  * MirrorUtil contains the helper functions to check mirror classes/methods/fields.
@@ -44,7 +45,7 @@ object MirrorUtil {
      * WARNING: 仅供单元测试使用
      */
     fun generateReportWithForceEval(instances: List<Any>): List<Pair<String, String>> {
-        return instances.map { instance ->
+        return instances.parallelMap { instance ->
             collectFields(instance).map {
                 val value = it.second
                 if (value is Lazy<*>) {
@@ -54,6 +55,6 @@ object MirrorUtil {
                 }
                 "${instance::class.java.canonicalName}.${it.first}" to it.second.toString()
             }
-        }.flatten().sortedBy { it.first }
+        }.flatten()
     }
 }

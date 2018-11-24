@@ -1,7 +1,7 @@
 package com.gh0u1l5.wechatmagician.spellbook.base
 
-import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
+import com.gh0u1l5.wechatmagician.spellbook.util.ParallelUtil.parallelForEach
 import com.gh0u1l5.wechatmagician.spellbook.util.XposedUtil
 import de.robv.android.xposed.XC_MethodHook
 import java.util.concurrent.ConcurrentHashMap
@@ -48,9 +48,9 @@ abstract class EventCenter: HookerProvider {
      * The asynchronous version of [notify] method.
      */
     fun notifyParallel(event: String, action: (Any) -> Unit) {
-        observers[event]?.map { observer ->
-            tryAsynchronously { action(observer) }
-        }?.forEach(Thread::join)
+        observers[event]?.parallelForEach { observer ->
+            tryVerbosely { action(observer) }
+        }
     }
 
     /**
