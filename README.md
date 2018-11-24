@@ -2,7 +2,17 @@
 
 [![Build Status](https://travis-ci.org/Gh0u1L5/WechatSpellbook.svg?branch=master)](https://travis-ci.org/Gh0u1L5/WechatSpellbook) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.gh0u1l5/wechat-spellbook/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.gh0u1l5/wechat-spellbook)
 
-__开发文档写了个开头了，请稍安勿躁……如果真的很好奇，你也可以偷偷看代码呀。__
+---
+
+### 2018.11.24 状态更新
+
+最近半年实在是太忙了，一直没有更新项目。
+
+最近先是花了一天多时间，解决了一下拖了很久的性能问题。通过重写APK Parser、启用新的数据结构和并行计算模块，把性能提升了10倍不止，详情可以参见这两个commit：[5bf7804](../../commit/5bf7804664606dd6280d5a0dc6e33f3a9ffbb5a6) & [388e25f](../../commit/388e25f904e73633f6639ae1b9e1aa1d959607cb)
+
+然后，就是把项目中的注释几乎全盘改成了中文，方便以后的交流。剩下还没有改完的部分诚求热心人帮一下忙，翻译起来实在是太累了。
+
+接下来会找机会把目前提交的issue看一下，把6.6.x及以上的微信版本都适配一下，不过这可能要等到12月底了吧。
 
 ---
 
