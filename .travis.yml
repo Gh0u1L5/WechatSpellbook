@@ -1,15 +1,10 @@
 language: android
 jdk: oraclejdk8
-sudo: required
 
 env:
   global:
-    - ADB_INSTALL_TIMEOUT=20 # minutes (2 minutes by default)
-    - GRADLE_VERSION=4.10
     - BUILD_API=android-28
     - BUILD_TOOLS=build-tools-28.0.3
-  matrix:
-    - EMULATOR_API=android-24 EMULATOR_ABI=armeabi-v7a
 
 android:
   components:
@@ -19,9 +14,6 @@ android:
     - $BUILD_API
     # The BuildTools version used by your project
     - $BUILD_TOOLS
-    # The SDK version used to perform unit tests
-    - $EMULATOR_API
-    - sys-img-${EMULATOR_ABI}-${EMULATOR_API}
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -33,20 +25,5 @@ cache:
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
 
-before_install:
-  # Setup the correct gradle version.
-  - wget http://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
-  - unzip gradle-${GRADLE_VERSION}-bin.zip
-  - export GRADLE_HOME=$PWD/gradle-${GRADLE_VERSION}
-  - export PATH=$GRADLE_HOME/bin:$PATH
-
-before_script:
-  # Create emulator for the script. Meant to race the install task.
-  - echo no | android create avd --force -n test -t $EMULATOR_API --abi $EMULATOR_ABI
-  # Start emulator with 3GB memory and 1GB system partition.
-  - emulator -avd test -no-window -memory 3072 -partition-size 1024 &
-  # Wait for the emulator to boot.
-  - android-wait-for-emulator
-
 script:
-  - travis_wait 60 gradle build connectedCheck
+  - ./gradlew build check
