@@ -21,18 +21,16 @@ object FileUtil {
      */
     fun writeBytesToDisk(path: String, content: ByteArray) {
         val file = File(path).also { it.parentFile.mkdirs() }
-        FileOutputStream(file).use {
-            BufferedOutputStream(it).write(content)
-        }
+        val fout = FileOutputStream(file)
+        BufferedOutputStream(fout).use { it.write(content) }
     }
 
     /**
      * 从磁盘上读取一个文件的全部数据
      */
     fun readBytesFromDisk(path: String): ByteArray {
-        return FileInputStream(path).use {
-            BufferedInputStream(it).readBytes()
-        }
+        val fin = FileInputStream(path)
+        return BufferedInputStream(fin).use { it.readBytes() }
     }
 
     /**
@@ -69,12 +67,12 @@ object FileUtil {
     fun writeInputStreamToDisk(path: String, ins: InputStream, bufferSize: Int = 8192) {
         val file = File(path)
         file.parentFile.mkdirs()
-        FileOutputStream(file).use {
-            val bout = BufferedOutputStream(it)
+        val fout = FileOutputStream(file)
+        BufferedOutputStream(fout).use {
             val buffer = ByteArray(bufferSize)
             var length = ins.read(buffer)
             while (length != -1) {
-                bout.write(buffer, 0, length)
+                it.write(buffer, 0, length)
                 length = ins.read(buffer)
             }
         }
