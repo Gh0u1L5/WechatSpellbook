@@ -13,13 +13,15 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 import java.io.File
 
 /**
- * This is the main class of Wechat Magician SpellBook. It implements most of the functions that
- * should be called when you load the package in Xposed. For more details, please check the [tutorial
- * documents](https://github.com/Gh0u1L5/WechatSpellbook/wiki) for developers.
+ * Wechat Magician SpellBook的核心引擎部分
+ *
+ * Refer: https://github.com/Gh0u1L5/WechatSpellbook/wiki
  */
 object SpellBook {
     /**
-     * A list holding the event centers that actually notify the plugins.
+     * 目前支持的 [EventCenter] 列表
+     *
+     * Refer: https://github.com/Gh0u1L5/WechatSpellbook/wiki/事件机制
      */
     private val centers: List<EventCenter> = listOf(
             Activities,
@@ -36,24 +38,24 @@ object SpellBook {
     )
 
     /**
-     * Returns whether the current process seems to be an important process in Wechat. Currently,
-     * "important process" refers to the main process and :tools process of Wechat.
+     * 判断当前进程是否为微信的重要进程, 目前会被判定为重要进程的只有主进程和 :tools 进程
      *
-     * @param lpparam the LoadPackageParam object that describes the current process, which should
-     * be the same one passed to [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage].
-     * @return `true` if the process is an important Wechat process, `false` otherwise.
+     * @param lpparam 通过重载 [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage] 方法
+     * 拿到的 [XC_LoadPackage.LoadPackageParam] 对象
      */
     fun isImportantWechatProcess(lpparam: XC_LoadPackage.LoadPackageParam): Boolean {
+        // 检查进程名
         val processName = lpparam.processName
         when {
             !processName.contains(':') -> {
-                // Found main process, continue
+                // 找到主进程 继续
             }
             processName.endsWith(":tools") -> {
-                // Found :tools process, continue
+                // 找到 :tools 进程 继续
             }
             else -> return false
         }
+        // 检查微信依赖的JNI库是否存在, 以此判断当前应用是不是微信
         val features = listOf (
                 "libwechatcommon.so",
                 "libwechatmm.so",
@@ -70,7 +72,7 @@ object SpellBook {
     }
 
     /**
-     * Returns the system context that can be used for some other operations.
+     * 利用 Reflection 获取当前的系统 Context
      */
     fun getSystemContext(): Context {
         val activityThreadClass = findClass("android.app.ActivityThread", null)
@@ -80,9 +82,7 @@ object SpellBook {
     }
 
     /**
-     * Finds out the APK path of a specific application.
-     *
-     * @param packageName the package name of the specific application.
+     * 获取指定应用的 APK 路径
      */
     fun getApplicationApkPath(packageName: String): String {
         val pm = getSystemContext().packageManager
@@ -91,10 +91,7 @@ object SpellBook {
     }
 
     /**
-     * Finds out the version of a specific application.
-     *
-     * @param packageName the package name of the specific application.
-     * @return a [Version] object that contains the current version information.
+     * 获取指定应用的版本号
      */
     fun getApplicationVersion(packageName: String): Version {
         val pm = getSystemContext().packageManager
@@ -104,13 +101,14 @@ object SpellBook {
     }
 
     /**
-     * Initializes and starts up the SpellBook engine.
+     * 启动 SpellBook 框架, 注册相关插件
      *
-     * @param lpparam the LoadPackageParam object that describes the current process, which should
-     * be the same one passed to [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage].
-     * @param plugins the list of custom plugins written by the developer, which should implement
-     * one or more interfaces in [com.gh0u1l5.wechatmagician.spellbook.interfaces] or override the
-     * method [HookerProvider.provideStaticHookers].
+     * @param lpparam 通过重载 [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage] 方法
+     * 拿到的 [XC_LoadPackage.LoadPackageParam] 对象
+     * @param plugins 由开发者编写的 SpellBook 插件, 这些插件应当实现 [HookerProvider.provideStaticHookers]
+     * 方法, 或 SpellBook 设计好的标准接口：[com.gh0u1l5.wechatmagician.spellbook.interfaces]
+     *
+     * Refer: https://github.com/Gh0u1L5/WechatSpellbook/wiki/事件机制
      */
     fun startup(lpparam: XC_LoadPackage.LoadPackageParam, plugins: List<Any>?) {
         log("Wechat SpellBook: ${plugins?.size ?: 0} plugins.")
@@ -120,7 +118,7 @@ object SpellBook {
     }
 
     /**
-     * Registers the given list of plugins asynchronously to all the event centers.
+     * 检查插件是否实现了标准化的接口, 并将它们注册到对应的 [EventCenter] 中
      */
     private fun registerPlugins(plugins: List<Any>?) {
         val observers = plugins?.filter { it !is HookerProvider } ?: listOf()
@@ -137,7 +135,7 @@ object SpellBook {
     }
 
     /**
-     * Registers all the custom hookers to the Xposed framework using [XposedUtil.postHooker].
+     * 检查插件中是否存在自定义的事件, 将它们直接注册到 Xposed 框架上
      */
     private fun registerHookers(plugins: List<Any>?) {
         val providers = plugins?.filter { it is HookerProvider } ?: listOf()

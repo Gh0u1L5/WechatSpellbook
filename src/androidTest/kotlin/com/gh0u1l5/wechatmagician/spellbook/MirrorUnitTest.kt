@@ -21,6 +21,9 @@ import java.io.File
 import java.lang.ClassLoader.getSystemClassLoader
 import kotlin.system.measureTimeMillis
 
+/**
+ * 自动化的微信版本适配测试
+ */
 @ExperimentalUnsignedTypes
 @RunWith(AndroidJUnit4::class)
 class MirrorUnitTest {
@@ -36,12 +39,12 @@ class MirrorUnitTest {
     }
 
     private fun verifyPackage(apkPath: String) {
-        // Parse the version of the apk
+        // 解析 APK 版本
         val regex = Regex("wechat-v(.*)\\.apk")
         val match = regex.find(apkPath) ?: throw Exception("Unexpected path format")
         val version = match.groupValues[1]
 
-        // Store APK file to cache directory.
+        // 将 APK 文件保存至 Cache 目录
         val cacheDir = context!!.cacheDir
         val apkFile = File(cacheDir, apkPath)
         try {
@@ -53,21 +56,21 @@ class MirrorUnitTest {
             return // ignore if the apk isn't accessible
         }
 
-        // Ensure the apk is presented, and start the test
+        // 确保 APK 文件存在 并开始自动化适配测试
         assertTrue(apkFile.exists())
         ApkFile(apkFile).use {
-            // Benchmark the APK parser
+            // 测试 APK Parser 的解析速度
             val timeParseDex = measureTimeMillis { it.classTypes }
             Log.d("MirrorUnitTest", "Benchmark: Parse DexClasses takes $timeParseDex ms.")
 
-            // Initialize WechatGlobal
+            // 初始化 WechatGlobal
             WechatGlobal.wxUnitTestMode = true
             WechatGlobal.wxVersion = Version(version)
             WechatGlobal.wxPackageName = "com.tencent.mm"
             WechatGlobal.wxLoader = PathClassLoader(apkFile.absolutePath, getSystemClassLoader())
             WechatGlobal.wxClasses = it.classTypes
 
-            // Clear cached lazy evaluations
+            // 清理上次测试留下的缓存
             val objects = MirrorClasses + MirrorMethods + MirrorFields
             ReflectionUtil.clearClassCache()
             ReflectionUtil.clearMethodCache()
@@ -75,7 +78,7 @@ class MirrorUnitTest {
                 MirrorUtil.clearUnitTestLazyFields(instance)
             }
 
-            // Test each lazy evaluation and generate result.
+            // 进行适配测试并生成结果
             var result: List<Pair<String, String>>? = null
             val timeSearch = measureTimeMillis {
                 result = MirrorUtil.generateReportWithForceEval(objects)

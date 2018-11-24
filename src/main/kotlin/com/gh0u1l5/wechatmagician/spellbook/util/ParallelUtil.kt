@@ -3,20 +3,24 @@ package com.gh0u1l5.wechatmagician.spellbook.util
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 
+/**
+ * 封装了一批用于并行计算的函数
+ */
 object ParallelUtil {
-    val processors = Runtime.getRuntime().availableProcessors()
+    /**
+     * 当前设备可用 CPU 数量
+     */
+    val processors: Int = Runtime.getRuntime().availableProcessors()
 
     /**
-     * Generates a ExecutorService with fixed threads.
+     * 创建一个线程池, 其线程总数固定不变
      *
-     * @param nThread the maximum number of threads, which by default is the number of available
-     * processors.
+     * @param nThread 该线程池的线程总数, 默认值为当前设备的 CPU 总数
      */
     fun createThreadPool(nThread: Int = processors) = Executors.newFixedThreadPool(processors)
 
     /**
-     * Returns a list containing the results of applying the given [transform] function
-     * to each element in the original collection.
+     * 进行一次并行计算的 Map 操作
      */
     inline fun <T, R> List<T>.parallelMap(crossinline transform: (T) -> R): List<R> {
         val sectionSize = size / processors
@@ -40,7 +44,7 @@ object ParallelUtil {
     }
 
     /**
-     * Performs the given [action] on each element.
+     * 进行一次并行计算的 ForEach 操作
      */
     inline fun <T> Iterable<T>.parallelForEach(crossinline action: (T) -> Unit) {
         val pool = createThreadPool()

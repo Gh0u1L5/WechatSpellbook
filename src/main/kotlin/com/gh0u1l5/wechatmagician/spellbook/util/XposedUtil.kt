@@ -8,7 +8,7 @@ import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.trySilently
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
 
 /**
- * XposedUtil 封装了用于和 Xposed 框架通信的接口.
+ * 封装了一批用于和 Xposed 框架通信的方法
  */
 object XposedUtil {
     /**

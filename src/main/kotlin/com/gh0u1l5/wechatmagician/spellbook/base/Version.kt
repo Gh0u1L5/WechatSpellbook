@@ -1,6 +1,8 @@
 package com.gh0u1l5.wechatmagician.spellbook.base
 
-// Version is a helper class for comparing version strings.
+/**
+ * 用于比较 Android 版本字符串的类
+ */
 class Version(private val versionName: String) {
 
     val version: List<Int> = versionName.split('.').mapNotNull(String::toIntOrNull)

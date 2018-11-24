@@ -1,7 +1,8 @@
 package com.gh0u1l5.wechatmagician.spellbook.util
 
-import android.util.Log
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
+import com.gh0u1l5.wechatmagician.spellbook.base.Classes
+import com.gh0u1l5.wechatmagician.spellbook.parser.ApkFile
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge.hookMethod
 import java.lang.reflect.Field
@@ -9,94 +10,12 @@ import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * ReflectionUtil contains the helper functions for APK analysis.
+ * 封装了一批关于 Reflection 的方法, 用来辅助 [Classes] 进行自动适配
  */
 object ReflectionUtil {
-    val TAG: String = javaClass.simpleName
-
-    class Classes(private val classes: List<Class<*>>) {
-        fun filterBySuper(superClass: Class<*>?): Classes {
-            return Classes(classes.filter { it.superclass == superClass }.also {
-                if (it.isEmpty()) {
-                    Log.w(TAG, "filterBySuper found nothing, super class = ${superClass?.simpleName}")
-                }
-            })
-        }
-
-        fun filterByEnclosingClass(enclosingClass: Class<*>?): Classes {
-            return Classes(classes.filter { it.enclosingClass == enclosingClass }.also {
-                if (it.isEmpty()) {
-                    Log.w(TAG, "filterByEnclosingClass found nothing, enclosing class = ${enclosingClass?.simpleName} ")
-                }
-            })
-        }
-
-        fun filterByMethod(returnType: Class<*>?, methodName: String, vararg parameterTypes: Class<*>): Classes {
-            return Classes(classes.filter { clazz ->
-                val method = findMethodExactIfExists(clazz, methodName, *parameterTypes)
-                method != null && method.returnType == returnType ?: method.returnType
-            }.also {
-                if (it.isEmpty()) {
-                    Log.w(TAG, "filterByMethod found nothing, returnType = ${returnType?.simpleName}, methodName = $methodName, parameterTypes = ${parameterTypes.joinToString("|") { it.simpleName }}")
-                }
-            })
-        }
-
-        fun filterByMethod(returnType: Class<*>?, vararg parameterTypes: Class<*>): Classes {
-            return Classes(classes.filter { clazz ->
-                findMethodsByExactParameters(clazz, returnType, *parameterTypes).isNotEmpty()
-            }.also {
-                if (it.isEmpty()) {
-                    Log.w(TAG, "filterByMethod found nothing, returnType = ${returnType?.simpleName}, parameterTypes = ${parameterTypes.joinToString("|") { it.simpleName }}")
-                }
-            })
-        }
-
-        fun filterByField(fieldName: String, fieldType: String): Classes {
-            return Classes(classes.filter { clazz ->
-                val field = findFieldIfExists(clazz, fieldName)
-                field != null && field.type.canonicalName == fieldType
-            }.also {
-                if (it.isEmpty()) {
-                    Log.w(TAG, "filterByField found nothing, fieldName = $fieldName, fieldType = $fieldType")
-                }
-            })
-        }
-
-        fun filterByField(fieldType: String): Classes {
-            return Classes(classes.filter { clazz ->
-                findFieldsWithType(clazz, fieldType).isNotEmpty()
-            }.also {
-                if (it.isEmpty()) {
-                    Log.w(TAG, "filterByField found nothing, fieldType = $fieldType")
-                }
-            })
-        }
-
-        fun firstOrNull(): Class<*>? {
-            if (classes.size > 1) {
-                val names = classes.map { it.canonicalName }
-                Log.w("Xposed", "found a signature that matches more than one class: $names")
-            }
-            return classes.firstOrNull()
-        }
-    }
-
-    // classCache stores the result of findClassesFromPackage to speed up next search.
-    private val classCache: MutableMap<Pair<String, Int>, Classes> = ConcurrentHashMap()
-
-    @JvmStatic fun clearClassCache() {
-        classCache.clear()
-    }
-
-    // methodCache stores the result of findFieldExact to speed up next search.
-    private val methodCache: MutableMap<String, Method?> = ConcurrentHashMap()
-
-    @JvmStatic fun clearMethodCache() {
-        methodCache.clear()
-    }
-
-    // shadowCopy copy all the fields of the object obj into the object copy.
+    /**
+     * 利用 Reflection 对指定对象进行浅拷贝
+     */
     @JvmStatic fun shadowCopy(obj: Any, copy: Any, clazz: Class<*>? = obj::class.java) {
         if (clazz == null) {
             return
@@ -108,7 +27,27 @@ object ReflectionUtil {
         }
     }
 
-    // findClassIfExists looks up and returns a class if it exists, otherwise it returns null.
+    /**
+     * 用于缓存已经完成的[findClassesFromPackage]的搜索结果
+     */
+    private val classCache: MutableMap<String, Classes> = ConcurrentHashMap()
+
+    @JvmStatic fun clearClassCache() {
+        classCache.clear()
+    }
+
+    /**
+     * 用于缓存已经完成的[findMethodExact]的搜索结果
+     */
+    private val methodCache: MutableMap<String, Method?> = ConcurrentHashMap()
+
+    @JvmStatic fun clearMethodCache() {
+        methodCache.clear()
+    }
+
+    /**
+     * 查找一个确定的类, 如果不存在返回 null
+     */
     @JvmStatic fun findClassIfExists(className: String, classLoader: ClassLoader): Class<*>? {
         try {
             return Class.forName(className, false, classLoader)
@@ -120,10 +59,23 @@ object ReflectionUtil {
         return null
     }
 
-    // findClassesFromPackage returns a list of all the classes contained in the given package.
+    /**
+     * 查找指定包里指定深度的所有类
+     *
+     * 出于效率方面的考虑, 只有深度相等的类才会被返回, 比如搜索深度为0的时候, 就只返回这个包自己拥有的类, 不包括它
+     * 里面其他包拥有的类.
+     *
+     * @param loader 用于取出 [Class] 对象的加载器
+     * @param classes 所有已知的类名, 由于 Java 的 [ClassLoader] 对象不支持读取所有类名, 我们必须先通过其他手段
+     * 获取一个类名列表, 详情请参见 [ApkFile] 和 [WechatGlobal]
+     * @param packageName 包名
+     * @param depth 深度
+     */
     @JvmStatic fun findClassesFromPackage(loader: ClassLoader, classes: Array<String>, packageName: String, depth: Int = 0): Classes {
-        if ((packageName to depth) in classCache) {
-            return classCache[packageName to depth]!!
+        val key = "$depth-$packageName"
+        val cached = classCache[key]
+        if (cached != null) {
+            return cached
         }
 
         val packageLength = packageName.count { it == '.' } + 1
@@ -147,13 +99,28 @@ object ReflectionUtil {
             findClassIfExists(it.substring(1, it.length - 1).replace('/', '.'), loader)
         })
 
-        classCache[packageName to depth] = result
-        return result
+        return result.also { classCache[key] = result }
     }
 
-    private fun getParametersString(vararg clazzes: Class<*>): String =
-            "(${clazzes.joinToString(","){ it.canonicalName }})"
+    /**
+     * 查找一个确定的方法, 如果不存在返回 null
+     */
+    @JvmStatic fun findMethodExactIfExists(clazz: Class<*>, methodName: String, vararg parameterTypes: Class<*>): Method? =
+            try { findMethodExact(clazz, methodName, *parameterTypes) } catch (_: Throwable) { null }
 
+    /**
+     * 根据 JVM Specification 生成一个参数签名
+     */
+    @JvmStatic private fun getParametersString(vararg clazzes: Class<*>): String =
+            "(" + clazzes.joinToString(","){ it.canonicalName ?: "" } + ")"
+
+    /**
+     * 查找一个确定的方法, 如果不存在, 抛出 [NoSuchMethodException] 异常
+     *
+     * @param clazz 该方法所属的类
+     * @param methodName 该方法的名称
+     * @param parameterTypes 该方法的参数类型
+     */
     @JvmStatic fun findMethodExact(clazz: Class<*>, methodName: String, vararg parameterTypes: Class<*>): Method {
         val fullMethodName = "${clazz.name}#$methodName${getParametersString(*parameterTypes)}#exact"
         if (fullMethodName in methodCache) {
@@ -163,19 +130,20 @@ object ReflectionUtil {
             val method = clazz.getDeclaredMethod(methodName, *parameterTypes).apply {
                 isAccessible = true
             }
-            methodCache[fullMethodName] = method
-            return method
+            return method.also { methodCache[fullMethodName] = method }
         } catch (e: NoSuchMethodException) {
             methodCache[fullMethodName] = null
             throw NoSuchMethodError(fullMethodName)
         }
     }
 
-    // findMethodExactIfExists looks up and returns a method if it exists, otherwise it returns null.
-    @JvmStatic fun findMethodExactIfExists(clazz: Class<*>, methodName: String, vararg parameterTypes: Class<*>): Method? =
-            try { findMethodExact(clazz, methodName, *parameterTypes) } catch (_: Throwable) { null }
-
-    // findMethodsByExactParameters returns a list of all methods declared/overridden in a class with the specified parameter types.
+    /**
+     * 查找所有满足要求的方法
+     *
+     * @param clazz 该方法所属的类
+     * @param returnType 该方法的返回类型
+     * @param parameterTypes 该方法的参数类型
+     */
     @JvmStatic fun findMethodsByExactParameters(clazz: Class<*>, returnType: Class<*>?, vararg parameterTypes: Class<*>): List<Method> {
         return clazz.declaredMethods.filter { method ->
             if (returnType != null && returnType != method.returnType) {
@@ -197,24 +165,33 @@ object ReflectionUtil {
         }
     }
 
-    // findFieldIfExists looks up and returns a field if it exists, otherwise it returns null
+    /**
+     * 查找一个确定的成员变量, 如果不存在返回 null
+     */
     @JvmStatic fun findFieldIfExists(clazz: Class<*>, fieldName: String): Field? =
             try { clazz.getField(fieldName) } catch (_: Throwable) { null }
 
-    // findFieldsWithGenericType finds all the fields of the given type.
+    /**
+     * 查找指定类中所有特定类型的成员变量
+     */
     @JvmStatic fun findFieldsWithType(clazz: Class<*>, typeName: String): List<Field> {
         return clazz.declaredFields.filter {
             it.type.name == typeName
         }
     }
 
-    // findFieldsWithGenericType finds all the fields of the given generic type.
+    /**
+     * 查找指定类中所有特定泛型的成员变量
+     */
     @JvmStatic fun findFieldsWithGenericType(clazz: Class<*>, genericTypeName: String): List<Field> {
         return clazz.declaredFields.filter {
             it.genericType.toString() == genericTypeName
         }
     }
 
+    /**
+     * 钩住一个类中所有的方法, 一般只用于测试
+     */
     @JvmStatic fun hookAllMethodsInClass(clazz: Class<*>, callback: XC_MethodHook) {
         clazz.declaredMethods.forEach { method -> hookMethod(method, callback) }
     }

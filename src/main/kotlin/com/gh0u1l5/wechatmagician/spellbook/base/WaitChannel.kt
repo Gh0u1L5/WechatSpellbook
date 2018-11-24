@@ -1,5 +1,8 @@
 package com.gh0u1l5.wechatmagician.spellbook.base
 
+/**
+ * 用 Java 实现的一个安全的 Wait Channel, 用来让若干线程安全地阻塞到事件结束
+ */
 class WaitChannel {
     @Volatile private var done = false
     private val channel = java.lang.Object()
@@ -12,7 +15,7 @@ class WaitChannel {
 
         val start = current
         synchronized(channel) {
-            // Handle spurious wakeup.
+            // 处理可能的 spurious wakeup
             while (!done && start + timeout > current) {
                 channel.wait(start + timeout - current)
             }

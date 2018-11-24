@@ -3,7 +3,8 @@
 package com.gh0u1l5.wechatmagician.spellbook
 
 /**
- * C.<class name> is a shortcut for <class name>::class.java
+ * C.<class name> 是 <class name>::class.java 的缩写形式
+ * 没有什么特别的意义, 仅仅是为了让代码看起来比较优雅（事逼）
  */
 object C {
     val Boolean = Boolean::class.java

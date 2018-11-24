@@ -1,13 +1,14 @@
 package com.gh0u1l5.wechatmagician.spellbook
 
+import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
+
 /**
- * This is an singleton object that records the working status for all the features implemented by
- * Wechat Magician SpellBook. All the supported feature names are defined in [StatusFlag].
+ * 用来记录各个 [EventCenter] 运行状态的单例对象
  */
 object WechatStatus {
 
     /**
-     * The flags that indicates which feature has been initialized.
+     * 目前支持的所有功能的标识
      */
     enum class StatusFlag {
         STATUS_FLAG_ACTIVITIES,
@@ -27,17 +28,17 @@ object WechatStatus {
     }
 
     /**
-     * A [IntArray] storing the working status of all the features.
+     * 用于记录所有成功启动的功能
      */
-    private var status: IntArray = intArrayOf()
+    private var valid: IntArray = intArrayOf()
 
     /**
-     * Returns the current working status as a [IntArray].
+     * 报告当前活跃的功能
      */
-    @Synchronized fun report(): IntArray = status
+    @Synchronized fun report(): IntArray = valid
 
     /**
-     * Updates the working status for the specific feature.
+     * 记录某功能启动完成
      */
-    @Synchronized fun toggle(flag: StatusFlag) { status += flag.ordinal }
+    @Synchronized fun toggle(flag: StatusFlag) { valid += flag.ordinal }
 }

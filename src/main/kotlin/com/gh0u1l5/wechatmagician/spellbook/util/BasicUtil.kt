@@ -4,18 +4,18 @@ import android.util.Log
 import kotlin.concurrent.thread
 
 /**
- * BasicUtil contains the helper functions for general purpose.
+ * 封装了一批很便利的常用操作
  */
 object BasicUtil {
     /**
-     * Executes a callback and ignore any thrown exceptions.
+     * 执行回调函数, 无视它抛出的任何异常
      */
     inline fun <T: Any>trySilently(func: () -> T?): T? {
         return try { func() } catch (t: Throwable) { null }
     }
 
     /**
-     * Executes a callback and record any thrown exceptions in the Xposed log.
+     * 执行回调函数, 将它抛出的异常记录到 Xposed 的日志里
      */
     inline fun <T: Any>tryVerbosely(func: () -> T?): T? {
         return try { func() } catch (t: Throwable) {
@@ -24,9 +24,9 @@ object BasicUtil {
     }
 
     /**
-     * Executes a callback asynchronously and record any thrown exceptions in the Xposed log.
+     * 异步执行回调函数, 将它抛出的记录到 Xposed 的日志里
      *
-     * Remember to handle UI operations in UI thread properly in the callback.
+     * WARN: 别忘了任何 UI 操作都必须使用 runOnUiThread
      */
     inline fun tryAsynchronously(crossinline func: () -> Unit): Thread {
         return thread(start = true) { func() }.apply {

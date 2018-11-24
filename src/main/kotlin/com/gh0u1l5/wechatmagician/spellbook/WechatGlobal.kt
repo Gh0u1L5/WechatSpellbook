@@ -11,41 +11,61 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 import java.lang.ref.WeakReference
 
 /**
- * This singleton is the core part that analyzes and stores critical classes and objects of Wechat.
- * These classes and objects will be used for hooking and tampering with runtime data.
+ * 用于记录所有关于 Wechat 的关键全局变量
  */
 object WechatGlobal {
 
     /**
-     * A [WaitChannel] blocking all the evaluations until [WechatGlobal.init] has finished.
+     * 若初始化操作耗费2秒以上, 视作初始化失败, 直接让微信开始正常运行
      */
-    val initializeChannel = WaitChannel()
+    private const val INIT_TIMEOUT = 2000L // ms
 
     /**
-     * A [Version] holding the version of current Wechat.
+     * 用于防止其他线程在初始化完成之前访问 WechatGlobal的变量
+     */
+    private val initChannel = WaitChannel()
+
+    /**
+     * 微信版本
+     *
+     * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms.
      */
     @Volatile var wxVersion: Version? = null
-    /**
-     * A string holding the package name of current Wechat process.
-     */
-    @Volatile var wxPackageName: String = ""
-    /**
-     * A class loader holding the classes provided by the Wechat APK.
-     */
-    @Volatile var wxLoader: ClassLoader? = null
-    /**
-     * A list holding a cache of full names for classes provided by the Wechat APK.
-     *
-     * Example: "Ljava/lang/String;"
-     */
-    @Volatile var wxClasses: Array<String>? = null
+        get() { initChannel.wait(INIT_TIMEOUT); return field }
 
     /**
-     * A flag indicating whether the codes are running under unit test mode.
+     * 微信包名（用于处理多开的情况）
+     *
+     * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms.
+     */
+    @Volatile var wxPackageName: String = ""
+        get() { initChannel.wait(INIT_TIMEOUT); return field }
+
+    /**
+     * 微信 APK 所使用的 ClassLoader, 用于加载 Class 对象
+     *
+     * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms.
+     */
+    @Volatile var wxLoader: ClassLoader? = null
+        get() { initChannel.wait(INIT_TIMEOUT); return field }
+
+    /**
+     * 微信的全部类名, 用于动态适配不同的微信版本
+     *
+     * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms.
+     *
+     * 这些类名使用的是 JVM 标准中规定的类名格式, 例如 String 的类名会被表示为 "Ljava/lang/String;"
+     * Refer: https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3
+     */
+    @Volatile var wxClasses: Array<String>? = null
+        get() { initChannel.wait(INIT_TIMEOUT); return field }
+
+    /**
+     * 单元测试模式的开关, 只应该在单元测试中打开
      */
     @Volatile var wxUnitTestMode: Boolean = false
 
-    // These are the cache of important global objects
+    // 缓存一些重要的微信全局对象
     @Volatile var AddressAdapterObject: WeakReference<BaseAdapter?> = WeakReference(null)
     @Volatile var ConversationAdapterObject: WeakReference<BaseAdapter?> = WeakReference(null)
     @Volatile var SnsUserUIAdapterObject: WeakReference<Adapter?> = WeakReference(null)
@@ -55,12 +75,12 @@ object WechatGlobal {
     @Volatile var SnsDatabaseObject: Any? = null
 
     /**
-     * Creates a lazy object for dynamic analyzing. Its evaluation will be blocked by
-     * the [initializeChannel] if the initialization is unfinished.
+     * 创建一个惰性求值对象, 只有被用到的时候才会自动求值
      *
-     * @param name the name of the lazy field, which is used to print a helpful error message.
-     * @param initializer the callback that actually initialize the lazy object.
-     * @return a lazy object that can be used for lazy evaluation.
+     * 当单元测试模式开启的时候, 会使用不同的 Lazy Implementation 辅助测试
+     *
+     * @param name 对象名称, 打印错误日志的时候会用到
+     * @param initializer 用来求值的回调函数
      */
     inline fun <T> wxLazy(name: String, crossinline initializer: () -> T?): Lazy<T> {
         return if (wxUnitTestMode) {
@@ -69,7 +89,6 @@ object WechatGlobal {
             }
         } else {
             lazy(LazyThreadSafetyMode.PUBLICATION) {
-                initializeChannel.wait(8000)
                 when (null) {
                     wxVersion     -> throw Error("Invalid wxVersion")
                     wxPackageName -> throw Error("Invalid wxPackageName")
@@ -81,6 +100,9 @@ object WechatGlobal {
         }
     }
 
+    /**
+     * 用来帮助单元测试的一个 Lazy Implementation, 允许开发者多次初始化一个惰性求值对象
+     */
     class UnitTestLazyImpl<out T>(private val initializer: () -> T): Lazy<T>, java.io.Serializable {
         @Volatile private var lazyValue: Lazy<T> = lazy(initializer)
 
@@ -97,14 +119,14 @@ object WechatGlobal {
     }
 
     /**
-     * Loads necessary information for static analysis into [WechatGlobal].
+     * 初始化当前的 [WechatGlobal]
      *
-     * @param lpparam the LoadPackageParam object that describes the current process, which should
-     * be the same one passed to [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage].
+     * @param lpparam 通过重载 [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage] 方法
+     * 拿到的 [XC_LoadPackage.LoadPackageParam] 对象
      */
     @JvmStatic fun init(lpparam: XC_LoadPackage.LoadPackageParam) {
         tryAsynchronously {
-            if (initializeChannel.isDone()) {
+            if (initChannel.isDone()) {
                 return@tryAsynchronously
             }
 
@@ -117,7 +139,7 @@ object WechatGlobal {
                     wxClasses = it.classTypes
                 }
             } finally {
-                initializeChannel.done()
+                initChannel.done()
             }
         }
     }
