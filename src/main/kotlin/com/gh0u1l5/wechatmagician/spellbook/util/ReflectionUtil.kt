@@ -121,7 +121,7 @@ object ReflectionUtil {
     }
 
     // findClassesFromPackage returns a list of all the classes contained in the given package.
-    @JvmStatic fun findClassesFromPackage(loader: ClassLoader, classes: List<String>, packageName: String, depth: Int = 0): Classes {
+    @JvmStatic fun findClassesFromPackage(loader: ClassLoader, classes: Array<String>, packageName: String, depth: Int = 0): Classes {
         if ((packageName to depth) in classCache) {
             return classCache[packageName to depth]!!
         }

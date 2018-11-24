@@ -19,12 +19,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka-android'
 
-kotlin {
-    experimental {
-        coroutines "enable"
-    }
-}
-
 android {
     compileSdkVersion 28
     defaultConfig {
