@@ -52,7 +52,7 @@ object XposedUtil {
     }
 
     /**
-     * 将[Hooker]对象发送给管理线程, 等待进一步的处理
+     * 将 [Hooker] 对象发送给管理线程, 等待进一步的处理
      */
     fun postHooker(hooker: Hooker) {
         managerHandler.post {

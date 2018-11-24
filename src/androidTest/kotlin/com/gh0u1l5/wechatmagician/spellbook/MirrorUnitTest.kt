@@ -61,7 +61,7 @@ class MirrorUnitTest {
         ApkFile(apkFile).use {
             // 测试 APK Parser 的解析速度
             val timeParseDex = measureTimeMillis { it.classTypes }
-            Log.d("MirrorUnitTest", "Benchmark: Parse DexClasses takes $timeParseDex ms.")
+            Log.d("MirrorUnitTest", "Benchmark: Parsing APK takes $timeParseDex ms.")
 
             // 初始化 WechatGlobal
             WechatGlobal.wxUnitTestMode = true
@@ -83,7 +83,7 @@ class MirrorUnitTest {
             val timeSearch = measureTimeMillis {
                 result = MirrorUtil.generateReportWithForceEval(objects)
             }
-            Log.d("MirrorUnitTest", "Benchmark: Search over classes takes $timeSearch ms.")
+            Log.d("MirrorUnitTest", "Benchmark: Searching over classes takes $timeSearch ms.")
             result?.forEach { entry ->
                 Log.d("MirrorUnitTest", "Verified: ${entry.first} -> ${entry.second}")
             }

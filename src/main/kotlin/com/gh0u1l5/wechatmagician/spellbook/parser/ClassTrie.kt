@@ -1,7 +1,7 @@
 package com.gh0u1l5.wechatmagician.spellbook.parser
 
-import com.gh0u1l5.wechatmagician.spellbook.util.ParallelUtil.parallelForEach
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.ArrayList
 
 class ClassTrie {
     companion object {
@@ -16,7 +16,7 @@ class ClassTrie {
     }
 
     operator fun plusAssign(types: Array<String>) {
-        types.asList().parallelForEach { this += it }
+        types.forEach { this += it }
     }
 
     fun search(packageName: String, depth: Int): List<String> {
@@ -48,9 +48,7 @@ class ClassTrie {
         }
 
         fun get(depth: Int = 0): List<String> {
-            if (depth == 0) {
-                return classes
-            }
+            if (depth == 0) return classes
             return children.flatMap { it.value.get(depth - 1) }
         }
 
@@ -65,7 +63,8 @@ class ClassTrie {
                 return children[pkg]?.get(depth) ?: emptyList()
             }
             val pkg = packageName.substring(pos, delimiterAt)
-            return children[pkg]?.search(packageName, depth, delimiterAt + 1) ?: emptyList()
+            val next = children[pkg] ?: return emptyList()
+            return next.search(packageName, depth, delimiterAt + 1)
         }
     }
 }

@@ -33,19 +33,21 @@ class ApkFile(apkFile: File) : Closeable {
         return zipFile.getEntry(path) != null
     }
 
+    private fun readDexFile(idx: Int): ByteArray {
+        val path = getDexFilePath(idx)
+        return readEntry(zipFile.getEntry(path))
+    }
+
     val classTypes: ClassTrie by lazy {
-        var last = 2
-        while (isDexFileExist(last)) last++
+        var end = 2
+        while (isDexFileExist(end)) end++
 
         val ret = ClassTrie()
-        (1..last).parallelForEach { idx ->
-            val path = getDexFilePath(idx)
-            val entry = zipFile.getEntry(path)
-            val data = readEntry(entry)
+        (1 until end).parallelForEach { idx ->
+            val data = readDexFile(idx)
             val buffer = ByteBuffer.wrap(data)
-            DexParser(buffer).parseClassTypes().forEach { type ->
-                ret += type
-            }
+            val parser = DexParser(buffer)
+            ret += parser.parseClassTypes()
         }
         return@lazy ret
     }
