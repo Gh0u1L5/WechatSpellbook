@@ -24,11 +24,13 @@ class WaitChannel {
     }
 
     fun done() {
+        if (done) return
+
         synchronized(channel) {
             done = true
             channel.notifyAll()
         }
     }
 
-    fun isDone() = synchronized(channel) { done }
+    fun isDone() = done
 }

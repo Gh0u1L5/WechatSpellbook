@@ -31,7 +31,13 @@ object WechatGlobal {
      * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms.
      */
     @Volatile var wxVersion: Version? = null
-        get() { initChannel.wait(INIT_TIMEOUT); return field }
+        get() {
+            if (!wxUnitTestMode) {
+                initChannel.wait(INIT_TIMEOUT)
+                initChannel.done()
+            }
+            return field
+        }
 
     /**
      * 微信包名（用于处理多开的情况）
@@ -39,7 +45,13 @@ object WechatGlobal {
      * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms.
      */
     @Volatile var wxPackageName: String = ""
-        get() { initChannel.wait(INIT_TIMEOUT); return field }
+        get() {
+            if (!wxUnitTestMode) {
+                initChannel.wait(INIT_TIMEOUT)
+                initChannel.done()
+            }
+            return field
+        }
 
     /**
      * 微信 APK 所使用的 ClassLoader, 用于加载 Class 对象
@@ -47,7 +59,13 @@ object WechatGlobal {
      * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms.
      */
     @Volatile var wxLoader: ClassLoader? = null
-        get() { initChannel.wait(INIT_TIMEOUT); return field }
+        get() {
+            if (!wxUnitTestMode) {
+                initChannel.wait(INIT_TIMEOUT)
+                initChannel.done()
+            }
+            return field
+        }
 
     /**
      * 微信的全部类名, 用于动态适配不同的微信版本
@@ -58,7 +76,13 @@ object WechatGlobal {
      * Refer: https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3
      */
     @Volatile var wxClasses: Array<String>? = null
-        get() { initChannel.wait(INIT_TIMEOUT); return field }
+        get() {
+            if (!wxUnitTestMode) {
+                initChannel.wait(INIT_TIMEOUT)
+                initChannel.done()
+            }
+            return field
+        }
 
     /**
      * 单元测试模式的开关, 只应该在单元测试中打开
