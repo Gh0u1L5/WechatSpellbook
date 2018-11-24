@@ -6,6 +6,7 @@ import com.gh0u1l5.wechatmagician.spellbook.SpellBook.getApplicationVersion
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.base.WaitChannel
 import com.gh0u1l5.wechatmagician.spellbook.parser.ApkFile
+import com.gh0u1l5.wechatmagician.spellbook.parser.ClassTrie
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import java.lang.ref.WeakReference
@@ -75,7 +76,7 @@ object WechatGlobal {
      * 这些类名使用的是 JVM 标准中规定的类名格式, 例如 String 的类名会被表示为 "Ljava/lang/String;"
      * Refer: https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3
      */
-    @Volatile var wxClasses: Array<String>? = null
+    @Volatile var wxClasses: ClassTrie? = null
         get() {
             if (!wxUnitTestMode) {
                 initChannel.wait(INIT_TIMEOUT)

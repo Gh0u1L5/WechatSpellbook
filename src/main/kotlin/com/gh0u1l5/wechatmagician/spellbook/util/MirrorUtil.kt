@@ -1,7 +1,6 @@
 package com.gh0u1l5.wechatmagician.spellbook.util
 
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
-import com.gh0u1l5.wechatmagician.spellbook.util.ParallelUtil.parallelMap
 
 /**
  * 封装了一批用于检查“自动适配表达式”的函数
@@ -57,7 +56,7 @@ object MirrorUtil {
      * WARN: 仅供单元测试使用
      */
     fun generateReportWithForceEval(instances: List<Any>): List<Pair<String, String>> {
-        return instances.parallelMap { instance ->
+        return instances.map { instance ->
             collectFields(instance).map {
                 val value = it.second
                 if (value is Lazy<*>) {
@@ -67,6 +66,6 @@ object MirrorUtil {
                 }
                 "${instance::class.java.canonicalName}.${it.first}" to it.second.toString()
             }
-        }.flatten()
+        }.flatten() // 为了 Benchmark 的准确性, 不对结果进行排序
     }
 }

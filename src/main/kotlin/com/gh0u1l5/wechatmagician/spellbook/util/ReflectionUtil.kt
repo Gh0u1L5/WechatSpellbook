@@ -3,6 +3,7 @@ package com.gh0u1l5.wechatmagician.spellbook.util
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
 import com.gh0u1l5.wechatmagician.spellbook.base.Classes
 import com.gh0u1l5.wechatmagician.spellbook.parser.ApkFile
+import com.gh0u1l5.wechatmagician.spellbook.parser.ClassTrie
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge.hookMethod
 import java.lang.reflect.Field
@@ -66,40 +67,21 @@ object ReflectionUtil {
      * 里面其他包拥有的类.
      *
      * @param loader 用于取出 [Class] 对象的加载器
-     * @param classes 所有已知的类名, 由于 Java 的 [ClassLoader] 对象不支持读取所有类名, 我们必须先通过其他手段
-     * 获取一个类名列表, 详情请参见 [ApkFile] 和 [WechatGlobal]
+     * @param trie 整个 APK 的包结构, 由于 Java 的 [ClassLoader] 对象不支持读取所有类名, 我们必须先通过其他手段
+     * 解析 APK 结构, 然后才能检索某个包内的所有类, 详情请参见 [ApkFile] 和 [WechatGlobal]
      * @param packageName 包名
      * @param depth 深度
      */
-    @JvmStatic fun findClassesFromPackage(loader: ClassLoader, classes: Array<String>, packageName: String, depth: Int = 0): Classes {
+    @JvmStatic fun findClassesFromPackage(loader: ClassLoader, trie: ClassTrie, packageName: String, depth: Int = 0): Classes {
         val key = "$depth-$packageName"
         val cached = classCache[key]
         if (cached != null) {
             return cached
         }
-
-        val packageLength = packageName.count { it == '.' } + 1
-        val packageDescriptor = "L${packageName.replace('.', '/')}"
-        val result = Classes(classes.filter { clazz ->
-            val currentPackageLength = clazz.count { it == '/' }
-            if (currentPackageLength < packageLength) {
-                return@filter false
-            }
-            // Check depth
-            val currentDepth = currentPackageLength - packageLength
-            if (depth != -1 && depth != currentDepth) {
-                return@filter false
-            }
-            // Check prefix
-            if (!clazz.startsWith(packageDescriptor)) {
-                return@filter false
-            }
-            return@filter true
-        }.mapNotNull {
-            findClassIfExists(it.substring(1, it.length - 1).replace('/', '.'), loader)
+        val classes = Classes(trie.search(packageName, depth).mapNotNull { name ->
+            findClassIfExists(name, loader)
         })
-
-        return result.also { classCache[key] = result }
+        return classes.also { classCache[key] = classes }
     }
 
     /**

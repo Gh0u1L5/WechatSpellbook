@@ -1,5 +1,7 @@
 package com.gh0u1l5.wechatmagician.spellbook.parser
 
+import com.gh0u1l5.wechatmagician.spellbook.util.ParallelUtil.parallelForEach
+
 import java.io.Closeable
 import java.io.File
 import java.nio.ByteBuffer
@@ -23,13 +25,27 @@ class ApkFile(apkFile: File) : Closeable {
     override fun close() =
             zipFile.close()
 
-    val classTypes: Array<String> by lazy {
-        var ret = emptyArray<String>()
-        for (i in 1 until 1000) {
-            val path = if (i == 1) DEX_FILE else String.format(DEX_ADDITIONAL, i)
-            val entry = zipFile.getEntry(path) ?: break
-            val buffer = ByteBuffer.wrap(readEntry(entry))
-            ret += DexParser(buffer).parseClassTypes()
+    private fun getDexFilePath(idx: Int) =
+            if (idx == 1) DEX_FILE else String.format(DEX_ADDITIONAL, idx)
+
+    private fun isDexFileExist(idx: Int): Boolean {
+        val path = getDexFilePath(idx)
+        return zipFile.getEntry(path) != null
+    }
+
+    val classTypes: ClassTrie by lazy {
+        var last = 2
+        while (isDexFileExist(last)) last++
+
+        val ret = ClassTrie()
+        (1..last).parallelForEach { idx ->
+            val path = getDexFilePath(idx)
+            val entry = zipFile.getEntry(path)
+            val data = readEntry(entry)
+            val buffer = ByteBuffer.wrap(data)
+            DexParser(buffer).parseClassTypes().forEach { type ->
+                ret += type
+            }
         }
         return@lazy ret
     }
