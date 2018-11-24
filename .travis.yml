@@ -3,6 +3,7 @@ jdk: oraclejdk8
 
 env:
   global:
+    - GRADLE_VERSION=4.10
     - BUILD_API=android-28
     - BUILD_TOOLS=build-tools-28.0.3
 
@@ -25,5 +26,12 @@ cache:
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
 
+before_install:
+  # Setup the correct gradle version.
+  - wget http://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
+  - unzip gradle-${GRADLE_VERSION}-bin.zip
+  - export GRADLE_HOME=$PWD/gradle-${GRADLE_VERSION}
+  - export PATH=$GRADLE_HOME/bin:$PATH
+
 script:
-  - ./gradlew build check
+  - gradle build check
