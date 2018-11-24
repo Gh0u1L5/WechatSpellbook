@@ -1,6 +1,8 @@
 package com.gh0u1l5.wechatmagician.spellbook.util
 
+import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 /**
@@ -51,7 +53,11 @@ object ParallelUtil {
         val iterator = iterator()
         while (iterator.hasNext()) {
             val item = iterator.next()
-            pool.execute { action(item) }
+            pool.execute {
+                tryVerbosely { action(item) } // 避免进程崩溃
+            }
         }
+        pool.shutdown()
+        pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
     }
 }
