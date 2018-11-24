@@ -31,7 +31,7 @@ object XposedUtil {
      *
      * @param hook 用于向 Xposed 框架注册事件的回调函数
      */
-    private fun tryHook(hook: () -> Unit) {
+    @JvmStatic private inline fun tryHook(crossinline hook: () -> Unit) {
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> {
                 /**
@@ -54,17 +54,9 @@ object XposedUtil {
     /**
      * 将 [Hooker] 对象发送给管理线程, 等待进一步的处理
      */
-    fun postHooker(hooker: Hooker) {
+    @JvmStatic fun postHooker(hooker: Hooker) {
         managerHandler.post {
-            tryHook {
-                synchronized(hooker) {
-                    if (hooker.hasHooked) {
-                        return@tryHook
-                    }
-                    hooker.hook()
-                    hooker.hasHooked = true
-                }
-            }
+            tryHook { hooker.hook() }
         }
     }
 }

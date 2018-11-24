@@ -19,7 +19,7 @@ object FileUtil {
      *
      * 若文件及其所在目录不存在的话, 会尝试建立该文件和目录
      */
-    fun writeBytesToDisk(path: String, content: ByteArray) {
+    @JvmStatic fun writeBytesToDisk(path: String, content: ByteArray) {
         val file = File(path).also { it.parentFile.mkdirs() }
         val fout = FileOutputStream(file)
         BufferedOutputStream(fout).use { it.write(content) }
@@ -28,7 +28,7 @@ object FileUtil {
     /**
      * 从磁盘上读取一个文件的全部数据
      */
-    fun readBytesFromDisk(path: String): ByteArray {
+    @JvmStatic fun readBytesFromDisk(path: String): ByteArray {
         val fin = FileInputStream(path)
         return BufferedInputStream(fin).use { it.readBytes() }
     }
@@ -36,7 +36,7 @@ object FileUtil {
     /**
      * 将一个 [Serializable] 对象写入磁盘指定位置
      */
-    fun writeObjectToDisk(path: String, obj: Serializable) {
+    @JvmStatic fun writeObjectToDisk(path: String, obj: Serializable) {
         val out = ByteArrayOutputStream()
         ObjectOutputStream(out).use {
             it.writeObject(obj)
@@ -47,7 +47,7 @@ object FileUtil {
     /**
      * 从磁盘上读取一个 [Serializable] 对象
      */
-    fun readObjectFromDisk(path: String): Any? {
+    @JvmStatic fun readObjectFromDisk(path: String): Any? {
         val bytes = readBytesFromDisk(path)
         val ins = ByteArrayInputStream(bytes)
         return ObjectInputStream(ins).use {
@@ -64,7 +64,7 @@ object FileUtil {
      * @param ins 提供数据的 [InputStream] 对象
      * @param bufferSize 缓冲区大小, 默认值为8192, 设置更大的值可以换来线性的性能提升
      */
-    fun writeInputStreamToDisk(path: String, ins: InputStream, bufferSize: Int = 8192) {
+    @JvmStatic fun writeInputStreamToDisk(path: String, ins: InputStream, bufferSize: Int = 8192) {
         val file = File(path)
         file.parentFile.mkdirs()
         val fout = FileOutputStream(file)
@@ -81,7 +81,7 @@ object FileUtil {
     /**
      * 将一张 [Bitmap] 写入磁盘指定位置
      */
-    fun writeBitmapToDisk(path: String, bitmap: Bitmap) {
+    @JvmStatic fun writeBitmapToDisk(path: String, bitmap: Bitmap) {
         val out = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
         writeBytesToDisk(path, out.toByteArray())
@@ -92,7 +92,7 @@ object FileUtil {
      *
      * @param writeCallback 实际进行写操作的回调函数
      */
-    inline fun writeOnce(path: String, writeCallback: (String) -> Unit) {
+    @JvmStatic inline fun writeOnce(path: String, writeCallback: (String) -> Unit) {
         val file = File(path)
         if (!file.exists()) {
             writeCallback(path)
@@ -108,7 +108,7 @@ object FileUtil {
     /**
      * 基于当前时间创建一个时间戳
      */
-    fun createTimeTag(): String {
+    @JvmStatic fun createTimeTag(): String {
         val formatter = SimpleDateFormat("yyyy-MM-dd-HHmmss", Locale.getDefault())
         return formatter.format(Calendar.getInstance().time)
     }
@@ -116,7 +116,7 @@ object FileUtil {
     /**
      * 广播告知所有应用: 磁盘上添加了新的图片
      */
-    fun notifyNewMediaFile(path: String, context: Context?) {
+    @JvmStatic fun notifyNewMediaFile(path: String, context: Context?) {
         val intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
         context?.sendBroadcast(intent.apply {
             data = Uri.fromFile(File(path))

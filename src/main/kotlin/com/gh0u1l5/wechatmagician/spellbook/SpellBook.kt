@@ -10,6 +10,7 @@ import com.gh0u1l5.wechatmagician.spellbook.util.XposedUtil
 import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.*
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import de.robv.android.xposed.IXposedHookLoadPackage
 import java.io.File
 
 /**
@@ -40,8 +41,8 @@ object SpellBook {
     /**
      * 判断当前进程是否为微信的重要进程, 目前会被判定为重要进程的只有主进程和 :tools 进程
      *
-     * @param lpparam 通过重载 [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage] 方法
-     * 拿到的 [XC_LoadPackage.LoadPackageParam] 对象
+     * @param lpparam 通过重载 [IXposedHookLoadPackage.handleLoadPackage] 方法拿到的
+     * [XC_LoadPackage.LoadPackageParam] 对象
      */
     fun isImportantWechatProcess(lpparam: XC_LoadPackage.LoadPackageParam): Boolean {
         // 检查进程名
@@ -103,10 +104,10 @@ object SpellBook {
     /**
      * 启动 SpellBook 框架, 注册相关插件
      *
-     * @param lpparam 通过重载 [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage] 方法
-     * 拿到的 [XC_LoadPackage.LoadPackageParam] 对象
+     * @param lpparam 通过重载 [IXposedHookLoadPackage.handleLoadPackage] 方法拿到的
+     * [XC_LoadPackage.LoadPackageParam] 对象
      * @param plugins 由开发者编写的 SpellBook 插件, 这些插件应当实现 [HookerProvider.provideStaticHookers]
-     * 方法, 或 SpellBook 设计好的标准接口：[com.gh0u1l5.wechatmagician.spellbook.interfaces]
+     * 方法, 或 interfaces 包中提供的标准接口
      *
      * Refer: https://github.com/Gh0u1L5/WechatSpellbook/wiki/事件机制
      */

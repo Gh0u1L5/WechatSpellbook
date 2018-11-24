@@ -72,15 +72,15 @@ dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
-dokka {
-    externalDocumentationLink {
-        url = new URL("http://api.xposed.info/reference/")
-    }
-}
-
 task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaAndroidTask) {
     outputFormat = 'javadoc'
     outputDirectory = "$buildDir/dokkaJavadoc"
+    externalDocumentationLink {
+        url = new URL("https://kotlinlang.org/api/latest/jvm/stdlib/")
+    }
+    externalDocumentationLink {
+        url = new URL("https://developer.android.com/reference/")
+    }
     externalDocumentationLink {
         url = new URL("http://api.xposed.info/reference/")
     }

@@ -1,5 +1,10 @@
 package com.gh0u1l5.wechatmagician.spellbook.parser
 
+/**
+ * Dex 格式的文件头
+ *
+ * Refer: https://source.android.com/devices/tech/dalvik/dex-format
+ */
 @ExperimentalUnsignedTypes
 class DexHeader {
     var version: Int = 0
@@ -48,6 +53,9 @@ class DexHeader {
     
     var dataOff: UInt = 0u
 
+    /**
+     * @suppress
+     */
     companion object {
         const val kSHA1DigestLen = 20
         const val kSHA1DigestOutputLen = kSHA1DigestLen * 2 + 1

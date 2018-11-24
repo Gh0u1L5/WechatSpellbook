@@ -10,7 +10,10 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findMethodsByExa
  * 一组 Class 对象的集合, 可以通过调用不同的 filter 函数筛选得到想要的结果
  */
 class Classes(private val classes: List<Class<*>>) {
-    companion object {
+    /**
+     * @suppress
+     */
+    private companion object {
         private const val TAG = "Reflection"
     }
     

@@ -9,7 +9,7 @@ object MirrorUtil {
     /**
      * 返回一个 Object 所声明的所有成员变量（不含基类成员）
      */
-    fun collectFields(instance: Any): List<Pair<String, Any>> {
+    @JvmStatic fun collectFields(instance: Any): List<Pair<String, Any>> {
         return instance::class.java.declaredFields.filter { field ->
             field.name != "INSTANCE" && field.name != "\$\$delegatedProperties"
         }.map { field ->
@@ -23,7 +23,7 @@ object MirrorUtil {
     /**
      * 生成一份适配报告, 记录每个自动适配表达式最终指向了微信中的什么位置
      */
-    fun generateReport(instances: List<Any>): List<Pair<String, String>> {
+    @JvmStatic fun generateReport(instances: List<Any>): List<Pair<String, String>> {
         return instances.map { instance ->
             collectFields(instance).map {
                 "${instance::class.java.canonicalName}.${it.first}" to it.second.toString()
@@ -36,7 +36,7 @@ object MirrorUtil {
      *
      * WARN: 仅供单元测试使用
      */
-    fun clearUnitTestLazyFields(instance: Any) {
+    @JvmStatic fun clearUnitTestLazyFields(instance: Any) {
         instance::class.java.declaredFields.forEach { field ->
             if (Lazy::class.java.isAssignableFrom(field.type)) {
                 field.isAccessible = true
@@ -55,7 +55,7 @@ object MirrorUtil {
      *
      * WARN: 仅供单元测试使用
      */
-    fun generateReportWithForceEval(instances: List<Any>): List<Pair<String, String>> {
+    @JvmStatic fun generateReportWithForceEval(instances: List<Any>): List<Pair<String, String>> {
         return instances.map { instance ->
             collectFields(instance).map {
                 val value = it.second

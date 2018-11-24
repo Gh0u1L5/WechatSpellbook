@@ -8,6 +8,7 @@ import com.gh0u1l5.wechatmagician.spellbook.base.WaitChannel
 import com.gh0u1l5.wechatmagician.spellbook.parser.ApkFile
 import com.gh0u1l5.wechatmagician.spellbook.parser.ClassTrie
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
+import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import java.lang.ref.WeakReference
 
@@ -19,7 +20,8 @@ object WechatGlobal {
     /**
      * 若初始化操作耗费2秒以上, 视作初始化失败, 直接让微信开始正常运行
      */
-    private const val INIT_TIMEOUT = 2000L // ms
+    @Suppress("MemberVisibilityCanBePrivate")
+    const val INIT_TIMEOUT = 2000L // ms
 
     /**
      * 用于防止其他线程在初始化完成之前访问 WechatGlobal的变量
@@ -29,7 +31,7 @@ object WechatGlobal {
     /**
      * 微信版本
      *
-     * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms.
+     * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms
      */
     @Volatile var wxVersion: Version? = null
         get() {
@@ -43,7 +45,7 @@ object WechatGlobal {
     /**
      * 微信包名（用于处理多开的情况）
      *
-     * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms.
+     * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms
      */
     @Volatile var wxPackageName: String = ""
         get() {
@@ -57,7 +59,7 @@ object WechatGlobal {
     /**
      * 微信 APK 所使用的 ClassLoader, 用于加载 Class 对象
      *
-     * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms.
+     * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms
      */
     @Volatile var wxLoader: ClassLoader? = null
         get() {
@@ -69,12 +71,9 @@ object WechatGlobal {
         }
 
     /**
-     * 微信的全部类名, 用于动态适配不同的微信版本
+     * 微信 APK 所包含的全部类名, 依据 package 结构组织在一起, 用于动态适配不同的微信版本
      *
-     * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms.
-     *
-     * 这些类名使用的是 JVM 标准中规定的类名格式, 例如 String 的类名会被表示为 "Ljava/lang/String;"
-     * Refer: https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3
+     * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms
      */
     @Volatile var wxClasses: ClassTrie? = null
         get() {
@@ -146,8 +145,8 @@ object WechatGlobal {
     /**
      * 初始化当前的 [WechatGlobal]
      *
-     * @param lpparam 通过重载 [de.robv.android.xposed.IXposedHookLoadPackage.handleLoadPackage] 方法
-     * 拿到的 [XC_LoadPackage.LoadPackageParam] 对象
+     * @param lpparam 通过重载 [IXposedHookLoadPackage.handleLoadPackage] 方法拿到的
+     * [XC_LoadPackage.LoadPackageParam] 对象
      */
     @JvmStatic fun init(lpparam: XC_LoadPackage.LoadPackageParam) {
         tryAsynchronously {

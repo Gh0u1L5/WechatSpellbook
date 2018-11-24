@@ -1,6 +1,7 @@
 package com.gh0u1l5.wechatmagician.spellbook.util
 
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -19,12 +20,13 @@ object ParallelUtil {
      *
      * @param nThread 该线程池的线程总数, 默认值为当前设备的 CPU 总数
      */
-    fun createThreadPool(nThread: Int = processors) = Executors.newFixedThreadPool(processors)
+    @JvmStatic fun createThreadPool(nThread: Int = processors): ExecutorService =
+            Executors.newFixedThreadPool(nThread)
 
     /**
      * 进行一次并行计算的 Map 操作
      */
-    inline fun <T, R> List<T>.parallelMap(crossinline transform: (T) -> R): List<R> {
+    @JvmStatic inline fun <T, R> List<T>.parallelMap(crossinline transform: (T) -> R): List<R> {
         val sectionSize = size / processors
 
         val main = List(processors) { mutableListOf<R>() }
@@ -48,7 +50,7 @@ object ParallelUtil {
     /**
      * 进行一次并行计算的 ForEach 操作
      */
-    inline fun <T> Iterable<T>.parallelForEach(crossinline action: (T) -> Unit) {
+    @JvmStatic inline fun <T> Iterable<T>.parallelForEach(crossinline action: (T) -> Unit) {
         val pool = createThreadPool()
         val iterator = iterator()
         while (iterator.hasNext()) {

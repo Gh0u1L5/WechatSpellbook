@@ -3,26 +3,69 @@ package com.gh0u1l5.wechatmagician.spellbook.parser
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.ArrayList
 
+/**
+ * 用来储存一个 APK 的 package 结构
+ *
+ * 出于性能考虑, 这个类不支持读线程和写线程同时操作, 但支持同类型的线程同时操作
+ */
 class ClassTrie {
-    companion object {
+    /**
+     * @suppress
+     */
+    private companion object {
+        /**
+         * 用来将 JVM 格式的类型标识符转换为类名
+         *
+         * Example: String 的类型标识符为 "Ljava/lang/String;"
+         * Refer: https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3
+         */
         private fun convertJVMTypeToClassName(type: String) =
                 type.substring(1, type.length - 1).replace('/', '.')
     }
 
-    private val head: TrieNode = TrieNode()
+    /**
+     * 读写开关, 用于增强线程间的安全性
+     *
+     * 只有开关设为 true 的时候, 写操作才会被执行
+     * 只有开关设为 false 的时候, 读操作才会返回有效数据
+     */
+    @Volatile var mutable = true
 
+    /**
+     * package 结构的根结点
+     */
+    private val root: TrieNode = TrieNode()
+
+    /**
+     * 插入一个单独的 JVM 格式的类型标识符
+     */
     operator fun plusAssign(type: String) {
-        head.add(convertJVMTypeToClassName(type))
+        if (mutable) {
+            root.add(convertJVMTypeToClassName(type))
+        }
     }
 
+    /**
+     * 插入一组 JVM 格式的类型标识符
+     */
     operator fun plusAssign(types: Array<String>) {
         types.forEach { this += it }
     }
 
+    /**
+     * 查找指定包里指定深度的所有类
+     *
+     * 出于性能方面的考虑, 只有深度相等的类才会被返回, 比如搜索深度为0的时候, 就只返回这个包自己拥有的类, 不包括它
+     * 里面其他包拥有的类.
+     */
     fun search(packageName: String, depth: Int): List<String> {
-        return head.search(packageName, depth)
+        if (mutable) return emptyList()
+        return root.search(packageName, depth)
     }
 
+    /**
+     * 私有的节点结构
+     */
     private class TrieNode {
         val classes: MutableList<String> = ArrayList(50)
 

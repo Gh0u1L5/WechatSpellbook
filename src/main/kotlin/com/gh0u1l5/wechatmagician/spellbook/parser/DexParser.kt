@@ -5,13 +5,11 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 /**
- * parse dex file.
- * current we only get the class name.
- * see:
- * http://source.android.com/devices/tech/dalvik/dex-format.html
- * http://dexandroid.googlecode.com/svn/trunk/dalvik/libdex/DexFile.h
+ * 封装对 DEX 格式数据的解析操作
  *
- * @author dongliu
+ * 参考了 dongliu 的 apk-parser 项目
+ *
+ * Refer: https://github.com/hsiafan/apk-parser
  */
 @ExperimentalUnsignedTypes
 class DexParser(buffer: ByteBuffer) {

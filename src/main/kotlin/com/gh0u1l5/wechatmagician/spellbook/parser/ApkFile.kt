@@ -8,11 +8,21 @@ import java.nio.ByteBuffer
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
+/**
+ * 封装对 APK 文件的解析操作
+ *
+ * 参考了 dongliu 的 apk-parser 项目
+ *
+ * Refer: https://github.com/hsiafan/apk-parser
+ */
 @ExperimentalUnsignedTypes
 class ApkFile(apkFile: File) : Closeable {
-    companion object {
-        const val DEX_FILE = "classes.dex"
-        const val DEX_ADDITIONAL = "classes%d.dex"
+    /**
+     * @suppress
+     */
+    private companion object {
+        private const val DEX_FILE = "classes.dex"
+        private const val DEX_ADDITIONAL = "classes%d.dex"
     }
 
     constructor(path: String) : this(File(path))
@@ -49,6 +59,6 @@ class ApkFile(apkFile: File) : Closeable {
             val parser = DexParser(buffer)
             ret += parser.parseClassTypes()
         }
-        return@lazy ret
+        return@lazy ret.apply { mutable = false }
     }
 }

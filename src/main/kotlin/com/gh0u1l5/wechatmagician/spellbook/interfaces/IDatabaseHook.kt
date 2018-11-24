@@ -5,9 +5,6 @@ import android.database.sqlite.SQLiteDatabase
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation.Companion.nop
 
-/**
- * @see “com.tencent.wcdb.database.SQLiteDatabase”
- */
 interface IDatabaseHook {
 
     /**

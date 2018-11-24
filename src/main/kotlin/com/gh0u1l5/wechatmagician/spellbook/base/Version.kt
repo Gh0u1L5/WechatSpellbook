@@ -5,7 +5,8 @@ package com.gh0u1l5.wechatmagician.spellbook.base
  */
 class Version(private val versionName: String) {
 
-    val version: List<Int> = versionName.split('.').mapNotNull(String::toIntOrNull)
+    private val version: List<Int> =
+            versionName.split('.').mapNotNull(String::toIntOrNull)
 
     override fun toString() = versionName
 

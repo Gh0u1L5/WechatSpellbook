@@ -59,13 +59,18 @@ abstract class EventCenter: HookerProvider {
     }
 
     /**
+     * 找到关注某个事件的所有观察者, 若不存在则返回 null
+     */
+    fun findObservers(event: String): Set<Any>? = observers[event]
+
+    /**
      * 通知所有正在观察某个事件的观察者
      *
      * @param event 具体发生的事件
      * @param action 对观察者进行通知的回调函数
      */
-    fun notify(event: String, action: (Any) -> Unit) {
-        observers[event]?.forEach {
+    inline fun notify(event: String, action: (Any) -> Unit) {
+        findObservers(event)?.forEach {
             tryVerbosely { action(it) }
         }
     }
@@ -76,8 +81,8 @@ abstract class EventCenter: HookerProvider {
      * @param event 具体发生的事件
      * @param action 对观察者进行通知的回调函数
      */
-    fun notifyParallel(event: String, action: (Any) -> Unit) {
-        observers[event]?.parallelForEach { observer ->
+    inline fun notifyParallel(event: String, crossinline action: (Any) -> Unit) {
+        findObservers(event)?.parallelForEach { observer ->
             tryVerbosely { action(observer) }
         }
     }
@@ -88,8 +93,8 @@ abstract class EventCenter: HookerProvider {
      * @param event 具体发生的事件
      * @param action 对观察者进行通知的回调函数
      */
-    fun <T: Any>notifyForResults(event: String, action: (Any) -> T?): List<T> {
-        return observers[event]?.mapNotNull {
+    inline fun <T: Any>notifyForResults(event: String, action: (Any) -> T?): List<T> {
+        return findObservers(event)?.mapNotNull {
             tryVerbosely { action(it) }
         } ?: emptyList()
     }
@@ -105,7 +110,7 @@ abstract class EventCenter: HookerProvider {
      * @param default 跳过函数调用之后, 仍然需要向 caller 提供一个返回值
      * @param action 对观察者进行通知的回调函数
      */
-    fun notifyForBypassFlags(event: String, param: XC_MethodHook.MethodHookParam, default: Any? = null, action: (Any) -> Boolean) {
+    inline fun notifyForBypassFlags(event: String, param: XC_MethodHook.MethodHookParam, default: Any? = null, action: (Any) -> Boolean) {
         val shouldBypass = notifyForResults(event, action).any()
         if (shouldBypass) {
             param.result = default
@@ -121,7 +126,7 @@ abstract class EventCenter: HookerProvider {
      * @param param 拦截函数调用后得到的 [XC_MethodHook.MethodHookParam] 对象
      * @param action 对观察者进行通知的回调函数
      */
-    fun notifyForOperations(event: String, param: XC_MethodHook.MethodHookParam, action: (Any) -> Operation<*>) {
+    inline fun notifyForOperations(event: String, param: XC_MethodHook.MethodHookParam, action: (Any) -> Operation<*>) {
         val operations = notifyForResults(event, action)
         val result = operations.filter { it.returnEarly }.maxBy { it.priority }
         if (result != null) {

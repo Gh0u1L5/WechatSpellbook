@@ -14,7 +14,7 @@ class Operation<out T>(
         /**
          * 创建一个空操作, 表明自己什么也不做
          */
-        fun <T>nop(priority: Int = 0): Operation<T> {
+        @JvmStatic fun <T>nop(priority: Int = 0): Operation<T> {
             return Operation(priority = priority)
         }
 
@@ -25,7 +25,7 @@ class Operation<out T>(
          * @param priority 操作的优先级, 当多个插件同时做出操作的时候, 框架将选取优先级较高的结果, 优先级相同的
          * 情况下随机选择一个操作
          */
-        fun <T>interruption(error: Throwable, priority: Int = 0): Operation<T> {
+        @JvmStatic fun <T>interruption(error: Throwable, priority: Int = 0): Operation<T> {
             return Operation(error = error, priority = priority, returnEarly = true)
         }
 
@@ -36,7 +36,7 @@ class Operation<out T>(
          * @param priority 操作的优先级, 当多个插件同时做出操作的时候, 框架将选取优先级较高的结果, 优先级相同的
          * 情况下随机选择一个操作
          */
-        fun <T>replacement(value: T, priority: Int = 0): Operation<T> {
+        @JvmStatic fun <T>replacement(value: T, priority: Int = 0): Operation<T> {
             return Operation(value = value, priority = priority, returnEarly = true)
         }
     }
